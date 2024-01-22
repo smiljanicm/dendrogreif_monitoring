@@ -1,0 +1,103 @@
+### Shiny ToDo
+Update Slack/mail with the link to the shiny app/check http://dgmonitor:3838
+
+Refresh button on the tab panels
+
+-- Splash screen (Better index.html)
+
+MAT VIEW to downsample the dendrometers for plotting - radio button selection
+          
+New tabs:
+  SapFlow subpanel
+    Total SapFlow
+
+
+Incorporate species in plotly selection
+
+Evaluate this list 
+
+Transform to Dashboard design using shinydashboard
+
+build MVP list
+
+After MVP (with Rene) - reserve address for the public access
+
+### DB ToDo
+Table mod:
+  observations: add date of ingestion
+locations:
+  move horizontal geoinfo: (gps, treeID, species_id, etc...) to plates (to reduce redundancy)
+plates:
+  name_change
+new_table: files from file_sensor_intefaces containing:
+  filepath + timestamp_column + is_processed
+  sensor_file_interfaces modification:
+    add column containing file_id
+    drop filepath, timestamp_column, is_processed
+    
+Add new streams
+  Dendrometers: --
+  SapFlow for: --
+  Temp RH for: Woepkendorf
+  Battery for: add strems from *_Status tables for offline sites: 
+  Soil Temp for: Ladebow, Woepkendorf, Vilm, EM, EU
+  VWC for: Ladebow, Vilm, EM
+  Permittivity: Ladebow, Vilm, EM, EU
+  Bulk_EC: Ladebow, Vilm, EM, EU
+  
+  TFL: Demmin
+  Wind: Demmin
+  Rain: Demmin
+  WTL: Demmin, Brudersdorf, Woepkendorf drained, Woepkendorf rewetted
+
+Build the list of files
+
+Clean static already processed files when test_insert time over 12 hours
+
+Re_insert all of the observations after
+  injestion dates in the observations
+  list all streams that need reprocessing
+    NOTE: stream identifier is a variable_id + location_id
+  
+Abstract for TRACE
+
+### Database_Backend ToDo
+log when the observation was ingested (datetime) in observations table
+  add column (for now not 'not null')
+  
+
+### R package for access
+
+### DONE Tasks: Shiny
+-- CREATE & REFRESH MATERIALIZED VIEWS for overviews and dendrometers DONE
+-- Possibly CREATE VIEWS in the db itself DONE
+-- Add tabpanels (Crown Dendrometers, Temp/RH, Sap Flow, Soil Temp, VWC, Battery/Power supply, Other) DONE
+-- Empty for now
+-- In the tabPanels left should be the clickable list DONE
+-- SPLIT crown and base dendrometers in the separate tabPanels DONE
+-- Populate tabPanels via MAT VIEWS DONE
+-- Permittivity tab
+-- Bulk_EC tab
+-- Sync the project folder to the shiny server test folder every day DONE
+
+### DONE Tasks: DB
+-- Demmin SF1.2 - 4.1 DONE
+
+### DONE Tasks: Database_backend
+/* Efficency upgrade:
+  instead of: 
+    scan the sensor_file_interface, read_in_file, ingest the data
+  do:
+    read in each file, check which sensor_file_interfaces are needed for processing, ingest the data
+  why:
+    it would build a "filecache" and eliminate multiple openings of the single files.
+  example:
+    currently sapflow files are opened 38 times (once for each column).
+    with this change sapflow files would be opened only once.
+  effect:
+    About 2 hours saved (from 15 to 13 hours)
+  Potential upgrade:
+    use map instead of the for loops
+    archive large files (probably manual process - it would be nice to automate it)
+*/
+
