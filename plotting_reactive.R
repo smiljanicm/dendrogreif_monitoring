@@ -31,7 +31,7 @@ new_plotting <- function(res, ...) {
   if(is.null(res)) return(NULL)
   res <- res %>% select(time, value, label)
   res_dp_orig <- nrow(res)
-  while(nrow(res) > 150000) {
+  while(nrow(res) > 500000) {
     res <- res %>% group_by(label) %>% slice_sample(prop=0.75) %>% arrange(label, time)
   }
   print(res %>% group_by(label) %>% summarize(n = n()))
@@ -46,7 +46,8 @@ new_plotting <- function(res, ...) {
     toWebGL() 
   if(res_dp_orig > 50000) {
     p <- p %>%
-      layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE))
+      layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE),
+             title = paste0("Plotting ", nrow(res), " data points from ", res_dp_orig, " initially selected.\n Zooming disabled (keep the number of points < 50000)"))
   }
   return(p)
 }
