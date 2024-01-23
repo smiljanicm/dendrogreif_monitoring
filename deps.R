@@ -86,27 +86,28 @@ sf_variables <- tbl(con, "variables") %>%
   select(description, variable_id) %>%
   collect()
 
-# clean_sensor <- function(data, clean_df = cdff, locID = 2, varID = 1, clsetID = 1) {
-#   #cleaning_set_id;location_id;variable_id;c
-#   clean_df <- clean_df %>% 
-#     filter(cleaning_set_id == clsetID) %>%
-#     filter(location_id == locID) %>% 
-#     filter(variable_id == varID) %>%
-#     select(correction, arguments)
-#   out <- data
-#   print(clean_df)
-#   if(nrow(clean_df) > 0) {
-#     for(i in 1:nrow(clean_df)){
-#       corr <- clean_df[[i, "correction"]]
-#       args <- clean_df[[i, "arguments"]]
-#       
-#       args_list <- fromJSON(args)
-#       args_list <- c(list(data=out), args_list)
-#       out <- do.call(corr, args_list)
-#     }
-#     
-#   }
-#   return(out)
-# }
-# cdff <- tbl(con, 'cleaning_instructions') %>% collect()
+clean_sensor <- function(data, clean_df = cdff, locID = 2, varID = 1, clsetID = 1) {
+  #cleaning_set_id;location_id;variable_id;c
+  clean_df <- clean_df %>% 
+    filter(cleaning_set_id == clsetID) %>%
+    filter(location_id == locID) %>% 
+    filter(variable_id == varID) %>%
+    select(correction, arguments)
+  out <- data
+  print(clean_df)
+  if(nrow(clean_df) > 0) {
+    for(i in 1:nrow(clean_df)){
+      corr <- clean_df[[i, "correction"]]
+      args <- clean_df[[i, "arguments"]]
+      
+      args_list <- fromJSON(args)
+      args_list <- c(list(data=out), args_list)
+      out <- do.call(corr, args_list)
+    }
+    
+  }
+  return(out)
+}
 
+cdff <- tbl(con, 'cleaning_instructions') %>% collect()
+print(tail(cdff))
