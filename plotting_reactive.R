@@ -13,10 +13,10 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
                          ORDER BY o.timestamp")
   res <- DBI::dbGetQuery(con, sql_query)
   if(cybox) {
-    res <- res %>% rename(TIMESTAMP = timestamp) %>%
-      mutate(Years = lubridate::year(TIMESTAMP),
-             yday = lubridate::yday(TIMESTAMP),
-             dec_date = lubridate::decimal_date(TIMESTAMP),
+    res <- res %>% rename(time = timestamp) %>%
+      mutate(Years = lubridate::year(time),
+             yday = lubridate::yday(time),
+             dec_date = lubridate::decimal_date(time),
              time = dec_date - Years,
              label = paste0(location_id, '_', Years))
   } else {
