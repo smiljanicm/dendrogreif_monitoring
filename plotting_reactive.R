@@ -1,4 +1,4 @@
-get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "observations", start = "2013-01-01", end = Sys.Date()) {
+get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "observations", start = "2013-01-01", end = Sys.Date(), toclean = 'raw') {
   if(is.null(checkbox) | is.null(variable_id)) return(NULL)
   locs <- checkbox %>%
     map_dbl(function(x){
@@ -12,6 +12,9 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
                            AND o.timestamp BETWEEN '", start, "'::timestamp AND '", end, "'::timestamp
                          ORDER BY o.timestamp")
   res <- DBI::dbGetQuery(con, sql_query)
+  
+  ### clean data here
+  print(toclean)
   if(cybox) {
     res <- res %>% rename(time = timestamp) %>%
       mutate(Years = lubridate::year(time),
@@ -72,8 +75,11 @@ observeEvent(ignoreInit=TRUE, baseDendro_trigger(), {
                                           input$compareYearsBaseDendrometer, 
                                           source = input$BaseDendrometersSource,
                                           start = input$BaseDendrometersDateRange[[1]],
-                                          end = input$BaseDendrometersDateRange[[2]])      
+                                          end = input$BaseDendrometersDateRange[[2]],
+                                          toclean = input$BaseDendrometersToClean)      
     })
+    
+    ### ToDo move cleaning procedure to get_data function (reason to simplify code and compare years right now misbehaves)
     if(input$BaseDendrometersToClean != 'raw') {
       print(input$BaseDendrometersToClean)
       print(baseDendro_reactive$res %>% head())
@@ -92,7 +98,7 @@ observeEvent(ignoreInit=TRUE, baseDendro_trigger(), {
         }
       }
     }
-
+    ### end ToDo
   } 
 })
 output$DendroPlotly <- renderPlotly({
