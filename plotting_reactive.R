@@ -13,8 +13,25 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
                          ORDER BY o.timestamp")
   res <- DBI::dbGetQuery(con, sql_query)
   
-  ### clean data here
-  print(toclean)
+  if(input$BaseDendrometersToClean != 'raw') {
+    print(input$BaseDendrometersToClean)
+    print(res %>% head())
+    if(!is.null(res)) {
+      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
+        map(function(x) {
+          res %>% rename("TIMESTAMP" = timestamp) %>% rename("Sensor" = value) %>%
+            filter(location_id == x) %>%
+            clean_sensor(locID = x, clean_df = cdff)
+        }) %>% bind_rows() %>% rename("timestamp" = TIMESTAMP, "value" = Sensor) %>% arrange(timestamp)
+      if(input$BaseDendrometersToClean == "clean") {
+        res <- res_clean
+      } else if(input$BaseDendrometersToClean == "compare") {
+        res <- res_clean %>% mutate(location_id = paste0(location_id, '_1.cleaned')) %>%
+          bind_rows(res %>% mutate(location_id = paste0(location_id, '_0.raw')))
+      }
+    }
+  }
+  
   if(cybox) {
     res <- res %>% rename(time = timestamp) %>%
       mutate(Years = lubridate::year(time),
@@ -62,13 +79,11 @@ baseDendro_trigger <- reactive({
 observeEvent(input$BaseDendrometersDateRangePlus, {
   new_start <- input$BaseDendrometersDateRange[[1]] %m+% months(1)
   new_end <- input$BaseDendrometersDateRange[[2]] %m+% months(1)
-  
   updateDateRangeInput(inputId = "BaseDendrometersDateRange", start = new_start, end = new_end)
 })
 
 observeEvent(ignoreInit=TRUE, baseDendro_trigger(), {
   if(input$tabset == 'Dendrometers') {
-    print(input$BaseDendrometersDateRange)
     withProgress(message = 'Getting data...', value=0.5, {
       baseDendro_reactive$res <- get_data(input$baseDendrometerCheckbox, 
                                           c(1,9), 
@@ -78,27 +93,6 @@ observeEvent(ignoreInit=TRUE, baseDendro_trigger(), {
                                           end = input$BaseDendrometersDateRange[[2]],
                                           toclean = input$BaseDendrometersToClean)      
     })
-    
-    ### ToDo move cleaning procedure to get_data function (reason to simplify code and compare years right now misbehaves)
-    if(input$BaseDendrometersToClean != 'raw') {
-      print(input$BaseDendrometersToClean)
-      print(baseDendro_reactive$res %>% head())
-      if(!is.null(baseDendro_reactive$res)) {
-        res_clean <- baseDendro_reactive$res %>% distinct(label) %>% unlist() %>%
-          map(function(x) {
-            baseDendro_reactive$res %>% rename("TIMESTAMP" = time) %>% rename("Sensor" = value) %>%
-              filter(label == x) %>%
-              clean_sensor(locID = x, clean_df = cdff)
-          }) %>% bind_rows() %>% rename("time" = TIMESTAMP, "value" = Sensor) %>% arrange(time)
-        if(input$BaseDendrometersToClean == "clean") {
-          baseDendro_reactive$res <- res_clean
-        } else if(input$BaseDendrometersToClean == "compare") {
-          baseDendro_reactive$res <- res_clean %>% mutate(label = paste0(label, '_1.cleaned')) %>%
-            bind_rows(baseDendro_reactive$res %>% mutate(label = paste0(label, '_0.raw')))
-        }
-      }
-    }
-    ### end ToDo
   } 
 })
 output$DendroPlotly <- renderPlotly({
