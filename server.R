@@ -36,6 +36,7 @@ server <- function(input, output, session) {
     updateCheckboxes(permittivity_buff, "permittivityCheckbox")
     updateCheckboxes(sf_buff, 'SFSensorCheckbox')
     updateCheckboxes(power_buff, "powerCheckbox")
+    updateCheckboxes(all_buff, "AllSeriesCheckbox")
   }, ignoreNULL = FALSE)
   
   source("plotting_reactive.R", local = TRUE)

@@ -245,3 +245,30 @@ observeEvent(ignoreInit=TRUE, power_trigger(), {
 output$powerPlotly <- renderPlotly({
   new_plotting(power_reactive$res)
 })
+
+AllSeries_reactive <- reactiveValues(res = NULL)
+AllSeries_trigger <- reactive({
+  list(input$AllSeriesAction, input$tabset)
+})
+observeEvent(input$AllSeriesDateRangePlus, {
+  new_start <- input$AllSeriesDateRange[[1]] %m+% months(1)
+  new_end <- input$AllSeriesDateRange[[2]] %m+% months(1)
+  updateDateRangeInput(inputId = "AllSeriesDateRange", start = new_start, end = new_end)
+})
+
+observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
+  if(input$tabset == 'All Series') {
+    withProgress(message = 'Getting data...', value=0.5, {
+      AllSeries_reactive$res <- get_data(input$AllSeriesCheckbox, 
+                                          c(1), 
+                                          input$compareYearsAllSeries, 
+                                          source = input$AllSeriesSource,
+                                          start = input$AllSeriesDateRange[[1]],
+                                          end = input$AllSeriesDateRange[[2]],
+                                          toclean = input$AllSeriesToClean)      
+    })
+  } 
+})
+output$AllSeriesPlotly <- renderPlotly({
+  new_plotting(AllSeries_reactive$res)
+})

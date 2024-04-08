@@ -79,6 +79,10 @@ loc_buff <-  tbl(con, "location_overview") %>%
          loc_description = factor(loc_description),
          variable = factor(variable))
 
+all_buff <- tbl(con, "site_vars_overview") %>% 
+  collect() %>%
+  arrange(site, label, variable, species, height)
+
 sf_buff <-  tbl(con, "site_sapflow_overview") %>% 
   collect()
 sf_variables <- tbl(con, "variables") %>% 

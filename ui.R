@@ -224,26 +224,34 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                             )
                           )
                  ),
-                 tabPanel("Cleaning data",
+                 tabPanel("All Series", 
                           sidebarLayout(
                             sidebarPanel(
-                              actionButton("Cleaning_action", "Update plot"),
-                              radioButtons("cleaningSource", 
+                              checkboxInput("compareYearsAllSeries", 
+                                            "Compare years"),
+                              radioButtons("AllSeriesSource", 
                                            "Choose data resolution:",
                                            choiceNames = c("RAW", "05 minutes", "15 minutes", "30 minutes", "60 minutes", "120 minutes"),
-                                           choiceValues = c("observations", "obs_05", "obs_15", "obs_30", "obs_60", "obs_120")),
-                              checkboxGroupInput("cleaningYearsCheckbox", 
-                                                 "Choose sensors:",
-                                                 choices = 2013:2024),
-                              radioButtons("cleaningRadio",
-                                           "Choose sensors:",
-                                           choiceNames = character(1),
-                                           choiceValues = character(1))
+                                           choiceValues = c("observations", "obs_05", "obs_15", "obs_30", "obs_60", "obs_120"),
+                                           selected = "obs_120"),
+                              radioButtons("AllSeriesToClean", 
+                                           "Cleaning data:",
+                                           choiceNames = c("RAW", "Cleaned", "Comparison"),
+                                           choiceValues = c("raw", "clean", "compare"),
+                                           selected = "raw"),
+                              dateRangeInput("AllSeriesDateRange", label = "Select Date Range", start = '2013-01-01', end = Sys.Date()),
+                              actionButton("AllSeriesDateRangePlus", label = "Add a month to dates"),
+                              actionLink("selectall_AllSeries","Select All"),
+                              actionButton("AllSeriesAction", "Update"),
+                              checkboxGroupInput("AllSeriesCheckbox", 
+                                                 "Choose dendrometers:",
+                                                 choices = character(0))
                             ),
-                            mainPanel(plotlyOutput("cleaningPlotly") %>% 
+                            mainPanel(plotlyOutput("AllSeriesPlotly") %>% 
                                         withSpinner(type=3, 
                                                     color.background = "white", 
-                                                    hide.ui = FALSE))
+                                                    hide.ui = FALSE)
+                            )
                           )
                  ),
                  
