@@ -260,7 +260,7 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
   if(input$tabset == 'All Series') {
     withProgress(message = 'Getting data...', value=0.5, {
       AllSeries_reactive$res <- get_data(input$AllSeriesCheckbox, 
-                                          c(1), 
+                                          c(1:1000), 
                                           input$compareYearsAllSeries, 
                                           source = input$AllSeriesSource,
                                           start = input$AllSeriesDateRange[[1]],
