@@ -260,12 +260,13 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
   if(input$tabset == 'All Series') {
     withProgress(message = 'Getting data...', value=0.5, {
       AllSeries_reactive$res <- get_data(input$AllSeriesCheckbox, 
-                                          c(1:1000), 
+                                         input$AllSeriesVariableCheckbox, #there is a problem here - locations should be in the checkbox and we should have the variable checkbox like in the sap flow tab
                                           input$compareYearsAllSeries, 
                                           source = input$AllSeriesSource,
                                           start = input$AllSeriesDateRange[[1]],
                                           end = input$AllSeriesDateRange[[2]],
-                                          toclean = input$AllSeriesToClean)      
+                                          toclean = input$AllSeriesToClean,
+                                         minutes=0:59)      
     })
   } 
 })

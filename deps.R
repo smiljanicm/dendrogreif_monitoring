@@ -79,14 +79,18 @@ loc_buff <-  tbl(con, "location_overview") %>%
          loc_description = factor(loc_description),
          variable = factor(variable))
 
-all_buff <- tbl(con, "site_vars_overview") %>% 
+all_buff <- tbl(con, "site_locs_overview") %>% 
   collect() %>%
-  arrange(site, label, variable, species, height)
+  arrange(site, species, label, height)
 
 sf_buff <-  tbl(con, "site_sapflow_overview") %>% 
   collect()
 sf_variables <- tbl(con, "variables") %>% 
   filter(variable_id > 99) %>% 
+  select(description, variable_id) %>%
+  collect()
+
+all_variables <- tbl(con, "variables") %>% 
   select(description, variable_id) %>%
   collect()
 

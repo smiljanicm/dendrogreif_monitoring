@@ -241,8 +241,12 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                            selected = "raw"),
                               dateRangeInput("AllSeriesDateRange", label = "Select Date Range", start = '2013-01-01', end = Sys.Date()),
                               actionButton("AllSeriesDateRangePlus", label = "Add a month to dates"),
-                              actionLink("selectall_AllSeries","Select All"),
                               actionButton("AllSeriesAction", "Update"),
+                              checkboxGroupInput("AllSeriesVariableCheckbox", 
+                                                 "Choose variables:",
+                                                 choiceNames = all_variables$description,
+                                                 choiceValues = all_variables$variable_id),
+                              actionLink("selectall_AllSeries","Select All"),
                               checkboxGroupInput("AllSeriesCheckbox", 
                                                  "Choose dendrometers:",
                                                  choices = character(0))
@@ -254,7 +258,5 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                             )
                           )
                  ),
-                 
-                 
 )
 
