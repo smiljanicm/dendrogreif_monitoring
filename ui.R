@@ -251,7 +251,8 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                                  "Choose dendrometers:",
                                                  choices = character(0))
                             ),
-                            mainPanel(plotlyOutput("AllSeriesPlotly") %>% 
+                            mainPanel(DT::DTOutput("seriesDT"),
+                                      plotlyOutput("AllSeriesPlotly") %>% 
                                         withSpinner(type=3, 
                                                     color.background = "white", 
                                                     hide.ui = FALSE)
