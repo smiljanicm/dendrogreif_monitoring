@@ -4,24 +4,32 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
     map_dbl(function(x){
       string_vec <- unlist(strsplit(x,'_'))
       as.numeric(string_vec[[length(string_vec)]])}) #Line needs cleaning for now location_id must be last in the string
-  sql_query <- paste0("SELECT o.timestamp as timestamp, o.value, o.location_id
+  sql_query <- paste0("SELECT o.timestamp as timestamp, o.value, p.label, l.description, l.height_above_ground as height, v.description as variable, l.location_id
                          FROM ", source, " as o
+                         LEFT JOIN locations as l USING(location_id)
+                         LEFT JOIN plates as p USING(plate_id)
+                         LEFT JOIN variables as v USING(variable_id)
                          WHERE location_id IN (", paste0(locs, collapse=','), ") 
                            AND variable_id IN ( ", paste0(variable_id, collapse=','), ")
                            AND EXTRACT(MINUTE FROM o.timestamp) IN (", paste0(minutes, collapse=','),") --change zero with minute resolutions
                            AND o.timestamp BETWEEN '", start, "'::timestamp AND '", end, "'::timestamp
                          ORDER BY o.timestamp")
   res <- DBI::dbGetQuery(con, sql_query)
+  res <- res %>% mutate(location_id = case_when(is.null(label) ~ paste0(description, '_', variable, '_', height, '_', location_id),
+                                                TRUE ~ paste0(label, '_', variable, '_', height, '_', location_id))) %>% select(timestamp, value, location_id)
   
   if(toclean != 'raw') {
-    print(toclean)
-    print(res %>% head())
+#    print(toclean)
+#    print(res %>% head())
     if(!is.null(res)) {
-      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
-        map(function(x) {
-          res %>% rename("TIMESTAMP" = timestamp) %>% rename("Sensor" = value) %>%
-            filter(location_id == x) %>%
+      print(locs)
+#      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
+      res_clean <- locs %>% unlist() %>% map(function(x) {
+#          print(x)
+          t <- res %>% rename("TIMESTAMP" = timestamp) %>% rename("Sensor" = value) %>%
+            filter(grepl(paste0('_',x), location_id)) %>%
             clean_sensor(locID = x, clean_df = cdff)
+          t
         }) %>% bind_rows() %>% rename("timestamp" = TIMESTAMP, "value" = Sensor) %>% arrange(timestamp)
       if(toclean == "clean") {
         res <- res_clean
