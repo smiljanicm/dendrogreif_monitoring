@@ -13,8 +13,8 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
                          ORDER BY o.timestamp")
   res <- DBI::dbGetQuery(con, sql_query)
   
-  if(input$BaseDendrometersToClean != 'raw') {
-    print(input$BaseDendrometersToClean)
+  if(toclean != 'raw') {
+    print(toclean)
     print(res %>% head())
     if(!is.null(res)) {
       res_clean <- res %>% distinct(location_id) %>% unlist() %>%
@@ -23,9 +23,9 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
             filter(location_id == x) %>%
             clean_sensor(locID = x, clean_df = cdff)
         }) %>% bind_rows() %>% rename("timestamp" = TIMESTAMP, "value" = Sensor) %>% arrange(timestamp)
-      if(input$BaseDendrometersToClean == "clean") {
+      if(toclean == "clean") {
         res <- res_clean
-      } else if(input$BaseDendrometersToClean == "compare") {
+      } else if(toclean == "compare") {
         res <- res_clean %>% mutate(location_id = paste0(location_id, '_1.cleaned')) %>%
           bind_rows(res %>% mutate(location_id = paste0(location_id, '_0.raw')))
       }
