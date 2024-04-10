@@ -259,15 +259,27 @@ observeEvent(input$AllSeriesDateRangePlus, {
 observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
   if(input$tabset == 'All Series') {
     withProgress(message = 'Getting data...', value=0.5, {
-      AllSeries_reactive$res <- get_data(input$AllSeriesCheckbox, 
-                                         input$AllSeriesVariableCheckbox, #there is a problem here - locations should be in the checkbox and we should have the variable checkbox like in the sap flow tab
+      s <- input$seriesDT_rows_selected
+      if (length(s)) {
+        print('These rows were selected:\n\n')
+        print(s, sep = ', ')
+        var_buff <- all_buff %>% filter(site %in% input$selectedSites)
+        sensor_list_dt <- var_buff[s,] %>%
+          unite('cons', everything()) %>%
+          unlist()
+        names(sensor_list_dt) <- NULL
+        print(sensor_list_dt)
+      AllSeries_reactive$res <- get_data(sensor_list_dt, 
+                                         input$AllSeriesVariableCheckbox,
                                           input$compareYearsAllSeries, 
                                           source = input$AllSeriesSource,
                                           start = input$AllSeriesDateRange[[1]],
                                           end = input$AllSeriesDateRange[[2]],
                                           toclean = input$AllSeriesToClean,
-                                         minutes=0:59)      
+                                         minutes=0:59)
+      }      
     })
+  
   } 
 })
 output$AllSeriesPlotly <- renderPlotly({
