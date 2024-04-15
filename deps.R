@@ -32,10 +32,6 @@ sites_df <- sites_df %>% mutate(lat_long_nest = strsplit(gsub('^\\(|\\)', '', gp
 overviews_buff <- tbl(con, "site_variable_overview") %>% 
   collect()
 
-airTemp_buff <- tbl(con, "site_airtemp_overview") %>% 
-  collect() %>%
-  select(site, description, height, location_id)
-
 RH_buff <- tbl(con, "site_rh_overview") %>% 
   collect() %>%
   select(site, description, height, location_id)

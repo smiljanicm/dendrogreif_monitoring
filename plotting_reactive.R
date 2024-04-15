@@ -80,21 +80,6 @@ new_plotting <- function(res, ...) {
   return(p)
 }
 
-airTemp_reactive <- reactiveValues(res = NULL)
-airTemp_trigger <- reactive({
-  list(input$airTemp_action, input$tabset)
-})
-observeEvent(ignoreInit=TRUE, airTemp_trigger(), {
-  if(input$tabset == 'Air Temperature') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      airTemp_reactive$res <- get_data(input$airTempCheckbox, 2, input$compareYearsAirTemp)
-    })
-  }
-})
-output$airTempPlotly <- renderPlotly({
-  new_plotting(airTemp_reactive$res)
-})
-
 RH_reactive <- reactiveValues(res = NULL)
 RH_trigger <- reactive({
   list(input$RH_action, input$tabset)

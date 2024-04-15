@@ -8,16 +8,6 @@ observeEvent(input$selectall_sites, {
   }
 })
 
-observeEvent(input$selectall_AirTemp, {
-  if(input$selectall_AirTemp == 0) {
-    return(NULL)
-  } else if (input$selectall_AirTemp%%2 == 0) {
-    updateCheckboxes(airTemp_buff, "airTempCheckbox", select = "None")
-  } else {
-    updateCheckboxes(airTemp_buff, "airTempCheckbox", select = "All")
-  }
-})
-
 observeEvent(input$selectall_RH, {
   if(input$selectall_RH == 0) {
     return(NULL)

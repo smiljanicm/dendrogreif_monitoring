@@ -17,24 +17,6 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           )
                           
                  ),
-                 tabPanel("Air Temperature",
-                          sidebarLayout(
-                            sidebarPanel(
-                              checkboxInput("compareYearsAirTemp", 
-                                            "Compare years"),
-                              actionLink("selectall_AirTemp","Select All"),
-                              actionButton("airTemp_action", "Update"),
-                              checkboxGroupInput("airTempCheckbox", 
-                                                 "Choose sensors:",
-                                                 choices = character(0))
-                            ),
-                            mainPanel(plotlyOutput("airTempPlotly") %>% 
-                                        withSpinner(type=3, 
-                                                    color.background = "white", 
-                                                    hide.ui = FALSE))
-                          )
-                          
-                 ),
                  tabPanel("Relative Humidity",
                           sidebarLayout(
                             sidebarPanel(
