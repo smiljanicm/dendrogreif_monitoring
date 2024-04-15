@@ -37,7 +37,7 @@ server <- function(input, output, session) {
     updateCheckboxes(sf_buff, 'SFSensorCheckbox')
     updateCheckboxes(power_buff, "powerCheckbox")
     updateCheckboxes(all_buff, "AllSeriesCheckbox")
-    output$seriesDT = renderDT(all_buff %>% filter(site %in% input$selectedSites))
+    output$seriesDT = renderDT({all_buff %>% filter(site %in% input$selectedSites)}, filter = list(position = 'top', clear = FALSE))
   }, ignoreNULL = FALSE)
   
   source("plotting_reactive.R", local = TRUE)
