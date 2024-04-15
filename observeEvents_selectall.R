@@ -8,16 +8,6 @@ observeEvent(input$selectall_sites, {
   }
 })
 
-observeEvent(input$selectall_RH, {
-  if(input$selectall_RH == 0) {
-    return(NULL)
-  } else if (input$selectall_RH%%2 == 0) {
-    updateCheckboxes(RH_buff, "RHCheckbox", select = "None")
-  } else {
-    updateCheckboxes(RH_buff, "RHCheckbox", select = "All")
-  }
-})
-
 observeEvent(input$selectall_SoilTemp, {
   if(input$selectall_SoilTemp == 0) {
     return(NULL)

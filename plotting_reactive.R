@@ -80,21 +80,6 @@ new_plotting <- function(res, ...) {
   return(p)
 }
 
-RH_reactive <- reactiveValues(res = NULL)
-RH_trigger <- reactive({
-  list(input$RH_action, input$tabset)
-})
-observeEvent(ignoreInit=TRUE, RH_trigger(), {
-  if(input$tabset == 'Relative Humidity') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      RH_reactive$res <- get_data(input$RHCheckbox, 3, input$compareYearsRH)
-    })
-  }
-})
-output$RHPlotly <- renderPlotly({
-  new_plotting(RH_reactive$res)
-})
-
 soilTemp_reactive <- reactiveValues(res = NULL)
 soilTemp_trigger <- reactive({
   list(input$SoilTemp_action, input$tabset)

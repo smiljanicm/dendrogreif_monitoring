@@ -17,23 +17,6 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           )
                           
                  ),
-                 tabPanel("Relative Humidity",
-                          sidebarLayout(
-                            sidebarPanel(
-                              checkboxInput("compareYearsRH", "Compare years"),
-                              actionLink("selectall_RH","Select All"),
-                              actionButton("RH_action", "Update plot"),
-                              checkboxGroupInput("RHCheckbox", 
-                                                 "Choose sensors:",
-                                                 choices = character(0))
-                            ),
-                            mainPanel(plotlyOutput("RHPlotly") %>% 
-                                        withSpinner(type=3, 
-                                                    color.background = "white", 
-                                                    hide.ui = FALSE))
-                          )
-                          
-                 ),
                  navbarMenu("Soil",
                             tabPanel("Soil Temperature",
                                      sidebarLayout(
