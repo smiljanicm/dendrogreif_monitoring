@@ -80,33 +80,6 @@ new_plotting <- function(res, ...) {
   return(p)
 }
 
-baseDendro_reactive <- reactiveValues(res = NULL)
-baseDendro_trigger <- reactive({
-  list(input$baseDendroAction, input$tabset)
-})
-observeEvent(input$BaseDendrometersDateRangePlus, {
-  new_start <- input$BaseDendrometersDateRange[[1]] %m+% months(1)
-  new_end <- input$BaseDendrometersDateRange[[2]] %m+% months(1)
-  updateDateRangeInput(inputId = "BaseDendrometersDateRange", start = new_start, end = new_end)
-})
-
-observeEvent(ignoreInit=TRUE, baseDendro_trigger(), {
-  if(input$tabset == 'Dendrometers') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      baseDendro_reactive$res <- get_data(input$baseDendrometerCheckbox, 
-                                          c(1,9), 
-                                          input$compareYearsBaseDendrometer, 
-                                          source = input$BaseDendrometersSource,
-                                          start = input$BaseDendrometersDateRange[[1]],
-                                          end = input$BaseDendrometersDateRange[[2]],
-                                          toclean = input$BaseDendrometersToClean)      
-    })
-  } 
-})
-output$DendroPlotly <- renderPlotly({
-  new_plotting(baseDendro_reactive$res)
-})
-
 crownDendrometers_reactive <- reactiveValues(res = NULL)
 crownDendrometers_trigger <- reactive({
   list(input$crownDendrometers_action, input$tabset)

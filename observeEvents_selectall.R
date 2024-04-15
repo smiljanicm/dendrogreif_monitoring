@@ -8,16 +8,6 @@ observeEvent(input$selectall_sites, {
   }
 })
 
-observeEvent(input$selectall_BaseDendrometers, {
-  if(input$selectall_BaseDendrometers == 0) {
-    return(NULL)
-  } else if (input$selectall_BaseDendrometers%%2 == 0) {
-    updateCheckboxes(base_dendrometer_buff, "baseDendrometerCheckbox", select = "None")  
-  } else {
-    updateCheckboxes(base_dendrometer_buff, "baseDendrometerCheckbox", select = "All")
-  }
-})
-
 observeEvent(input$selectall_CrownDendrometers, {
   if(input$selectall_CrownDendrometers == 0) {
     return(NULL)

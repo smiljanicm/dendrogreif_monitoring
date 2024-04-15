@@ -32,11 +32,6 @@ sites_df <- sites_df %>% mutate(lat_long_nest = strsplit(gsub('^\\(|\\)', '', gp
 overviews_buff <- tbl(con, "site_variable_overview") %>% 
   collect()
 
-base_dendrometer_buff <- tbl(con, "site_base_dendrometer_overview") %>% 
-  collect() %>%
-  select(site, label, species, location_id) %>%
-  arrange(species)
-
 crownDendrometers_buff <- tbl(con, "site_crowndendrometers_overview") %>% 
   collect() %>%
   select(site, label, species, height, location_id) %>%
@@ -49,7 +44,6 @@ airTemp_buff <- tbl(con, "site_airtemp_overview") %>%
 RH_buff <- tbl(con, "site_rh_overview") %>% 
   collect() %>%
   select(site, description, height, location_id)
-
 
 soilTemp_buff <- tbl(con, "site_soiltemp_overview") %>% 
   collect() %>%

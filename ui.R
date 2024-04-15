@@ -17,36 +17,6 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           )
                           
                  ),
-                 tabPanel("Dendrometers", 
-                          sidebarLayout(
-                            sidebarPanel(
-                              checkboxInput("compareYearsBaseDendrometer", 
-                                            "Compare years"),
-                              radioButtons("BaseDendrometersSource", 
-                                           "Choose data resolution:",
-                                           choiceNames = c("RAW", "05 minutes", "15 minutes", "30 minutes", "60 minutes", "120 minutes"),
-                                           choiceValues = c("observations", "obs_05", "obs_15", "obs_30", "obs_60", "obs_120"),
-                                           selected = "obs_120"),
-                              radioButtons("BaseDendrometersToClean", 
-                                           "Cleaning data:",
-                                           choiceNames = c("RAW", "Cleaned", "Comparison"),
-                                           choiceValues = c("raw", "clean", "compare"),
-                                           selected = "raw"),
-                              dateRangeInput("BaseDendrometersDateRange", label = "Select Date Range", start = '2013-01-01', end = Sys.Date()),
-                              actionButton("BaseDendrometersDateRangePlus", label = "Add a month to dates"),
-                              actionLink("selectall_BaseDendrometers","Select All"),
-                              actionButton("baseDendroAction", "Update"),
-                              checkboxGroupInput("baseDendrometerCheckbox", 
-                                                 "Choose dendrometers:",
-                                                 choices = character(0))
-                            ),
-                            mainPanel(plotlyOutput("DendroPlotly") %>% 
-                                        withSpinner(type=3, 
-                                                    color.background = "white", 
-                                                    hide.ui = FALSE)
-                                      )
-                          )
-                 ),
                  tabPanel("CrownDendrometers",
                           sidebarLayout(
                             sidebarPanel(

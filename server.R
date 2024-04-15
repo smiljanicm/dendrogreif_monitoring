@@ -26,7 +26,6 @@ server <- function(input, output, session) {
   }
   
   observeEvent(input$selectedSites, {
-    updateCheckboxes(base_dendrometer_buff, "baseDendrometerCheckbox")
     updateCheckboxes(crownDendrometers_buff, "crownDendrometers_checkbox")
     updateCheckboxes(airTemp_buff, "airTempCheckbox")
     updateCheckboxes(RH_buff, "RHCheckbox")
