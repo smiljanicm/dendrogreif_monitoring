@@ -8,46 +8,6 @@ observeEvent(input$selectall_sites, {
   }
 })
 
-observeEvent(input$selectall_SoilTemp, {
-  if(input$selectall_SoilTemp == 0) {
-    return(NULL)
-  } else if (input$selectall_SoilTemp%%2 == 0) {
-    updateCheckboxes(soilTemp_buff, "soilTempCheckbox", select = "None")
-  } else {
-    updateCheckboxes(soilTemp_buff, "soilTempCheckbox", select = "All")
-  }
-})
-
-observeEvent(input$selectall_VWC, {
-  if(input$selectall_VWC == 0) {
-    return(NULL)
-  } else if (input$selectall_VWC%%2 == 0) {
-    updateCheckboxes(VWC_buff, "VWCCheckbox", select = "None")
-  } else {
-    updateCheckboxes(VWC_buff, "VWCCheckbox", select = "All")
-  }
-})
-
-observeEvent(input$selectall_Bulk, {
-  if(input$selectall_Bulk == 0) {
-    return(NULL)
-  } else if (input$selectall_Bulk%%2 == 0) {
-    updateCheckboxes(bulk_buff, "bulkCheckbox", select = "None")
-  } else {
-    updateCheckboxes(bulk_buff, "bulkCheckbox", select = "All")
-  }
-})
-
-observeEvent(input$selectall_Permittivity, {
-  if(input$selectall_Permittivity == 0) {
-    return(NULL)
-  } else if (input$selectall_Permittivity%%2 == 0) {
-    updateCheckboxes(permittivity_buff, "permittivityCheckbox", select = "None")
-  } else {
-    updateCheckboxes(permittivity_buff, "permittivityCheckbox", select = "All")
-  }
-})
-
 observeEvent(input$selectall_SF, {
   if(input$selectall_SF == 0) {
     return(NULL)

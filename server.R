@@ -26,10 +26,6 @@ server <- function(input, output, session) {
   }
   
   observeEvent(input$selectedSites, {
-    updateCheckboxes(soilTemp_buff, "soilTempCheckbox")
-    updateCheckboxes(VWC_buff, "VWCCheckbox")
-    updateCheckboxes(bulk_buff, "bulkCheckbox")
-    updateCheckboxes(permittivity_buff, "permittivityCheckbox")
     updateCheckboxes(sf_buff, 'SFSensorCheckbox')
     updateCheckboxes(power_buff, "powerCheckbox")
     updateCheckboxes(all_buff, "AllSeriesCheckbox")

@@ -80,68 +80,6 @@ new_plotting <- function(res, ...) {
   return(p)
 }
 
-soilTemp_reactive <- reactiveValues(res = NULL)
-soilTemp_trigger <- reactive({
-  list(input$SoilTemp_action, input$tabset)
-})
-observeEvent(ignoreInit=TRUE, soilTemp_trigger(), {
-  if(input$tabset == 'Soil Temperature') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      soilTemp_reactive$res <- get_data(input$soilTempCheckbox, 2, input$compareYearsSoilTemp)
-    })
-  }
-})
-output$soilTempPlotly <- renderPlotly({
-  new_plotting(soilTemp_reactive$res)
-})
-
-VWC_reactive <- reactiveValues(res = NULL)
-VWC_trigger <- reactive({
-  list(input$VWC_action, input$tabset)
-})
-observeEvent(ignoreInit=TRUE, VWC_trigger(), {
-  if(input$tabset == 'Volumetric Water Content') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      VWC_reactive$res <- get_data(input$VWCCheckbox, 4, input$compareYearsVWC)
-    })
-  }
-})
-output$VWCPlotly <- renderPlotly({
-  new_plotting(VWC_reactive$res)
-})
-
-bulk_reactive <- reactiveValues(res = NULL)
-bulk_trigger <- reactive({
-  list(input$Bulk_action, input$tabset)
-})
-observeEvent(ignoreInit=TRUE, bulk_trigger(), {
-  if(input$tabset == 'Bulk_EC') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      bulk_reactive$res <- get_data(input$bulkCheckbox, 7, input$compareYearsBulk)
-    })
-  }
-})
-output$bulkPlotly <- renderPlotly({
-  new_plotting(bulk_reactive$res)
-})
-
-permittivity_reactive <- reactiveValues(res = NULL)
-permittivity_trigger <- reactive({
-  list(input$Permittivity_action, input$tabset)
-})
-observeEvent(ignoreInit=TRUE, permittivity_trigger(), {
-  if(input$tabset == 'Permittivity') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      permittivity_reactive$res <- get_data(input$permittivityCheckbox, 8, input$compareYearsPermittivity)
-    })
-  }
-})
-output$permittivityPlotly <- renderPlotly({
-  new_plotting(permittivity_reactive$res)
-})
-
-
-
 SF_reactive <- reactiveValues(res = NULL)
 SF_trigger <- reactive({
   list(input$SF_action, input$tabset)

@@ -32,22 +32,6 @@ sites_df <- sites_df %>% mutate(lat_long_nest = strsplit(gsub('^\\(|\\)', '', gp
 overviews_buff <- tbl(con, "site_variable_overview") %>% 
   collect()
 
-soilTemp_buff <- tbl(con, "site_soiltemp_overview") %>% 
-  collect() %>%
-  select(site, description, height, location_id)
-
-VWC_buff <- tbl(con, "site_vwc_overview") %>% 
-  collect() %>%
-  select(site, description, height, location_id)
-
-bulk_buff <- tbl(con, "site_bulkec_overview") %>%
-  collect() %>%
-  select(site, description, height, location_id)
-
-permittivity_buff <- tbl(con, "site_permittivity_overview") %>%
-  collect() %>%
-  select(site, description, height, location_id)
-
 power_buff <- tbl(con, "site_power_overview") %>% 
   collect() %>%
   select(site, description, height, location_id)
