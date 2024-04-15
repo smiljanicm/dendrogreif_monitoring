@@ -8,16 +8,6 @@ observeEvent(input$selectall_sites, {
   }
 })
 
-observeEvent(input$selectall_SF, {
-  if(input$selectall_SF == 0) {
-    return(NULL)
-  } else if (input$selectall_SF%%2 == 0) {
-    updateCheckboxes(sf_buff, "SFSensorCheckbox", select = "None")
-  } else {
-    updateCheckboxes(sf_buff, "SFSensorCheckbox", select = "All")
-  }
-})
-
 observeEvent(input$selectall_AllSeries, {
   if(input$selectall_AllSeries == 0) {
     return(NULL)

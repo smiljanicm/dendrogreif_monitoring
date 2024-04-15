@@ -80,29 +80,6 @@ new_plotting <- function(res, ...) {
   return(p)
 }
 
-SF_reactive <- reactiveValues(res = NULL)
-SF_trigger <- reactive({
-  list(input$SF_action, input$tabset)
-})
-observeEvent(ignoreInit=TRUE, SF_trigger(), {
-  if(input$tabset == 'SapFlow') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      SF_reactive$res <- get_data(input$SFSensorCheckbox, input$SFVariableCheckbox, input$compareYearsSF, minutes = 0:59)
-    })
-  }
-})
-output$SFPlotly <- renderPlotly({
-  new_plotting(SF_reactive$res)
-})
-# output$SFPlotly <- renderPlotly({
-#   print(input$SFVariableCheckbox)
-#   print(paste(input$SFVariableCheckbox, collapse = ', '))
-#   plotting(input$SFSensorCheckbox, input$SFVariableCheckbox, input$compareYearsSF, minutes=0:59)
-# })
-
-
-
-
 power_reactive <- reactiveValues(res = NULL)
 power_trigger <- reactive({
   list(input$Power_action, input$tabset)
@@ -151,7 +128,6 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
                                          minutes=0:59)
       }      
     })
-  
   } 
 })
 output$AllSeriesPlotly <- renderPlotly({

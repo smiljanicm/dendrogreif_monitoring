@@ -17,28 +17,6 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           )
                           
                  ),
-                 tabPanel("SapFlow",
-                          sidebarLayout(
-                            sidebarPanel(
-                              checkboxInput("compareYearsSF", "Compare years"),
-                              actionLink("selectall_SF","Select All"),
-                              actionButton("SF_action", "Update plot"),
-                              checkboxGroupInput("SFSensorCheckbox", 
-                                                 "Choose sensors:",
-                                                 choices = character(0)),
-                              checkboxGroupInput("SFVariableCheckbox", 
-                                                 "Choose variables:",
-                                                 choiceNames = sf_variables$description,
-                                                 choiceValues = sf_variables$variable_id),
-                              radioButtons("radioSF", "What kind of facetting",c("None" = 'none', 'Sensors' = 'sensors', 'Variables' = 'variables'))
-                            ),
-                            mainPanel(plotlyOutput("SFPlotly") %>% 
-                                        withSpinner(type=3, 
-                                                    color.background = "white", 
-                                                    hide.ui = FALSE))
-                          )
-                          
-                 ),
                  tabPanel("Power Supply",
                           sidebarLayout(
                             sidebarPanel(
