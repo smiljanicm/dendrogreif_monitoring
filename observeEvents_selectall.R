@@ -8,16 +8,6 @@ observeEvent(input$selectall_sites, {
   }
 })
 
-observeEvent(input$selectall_CrownDendrometers, {
-  if(input$selectall_CrownDendrometers == 0) {
-    return(NULL)
-  } else if (input$selectall_CrownDendrometers%%2 == 0) {
-    updateCheckboxes(crownDendrometers_buff, "crownDendrometers_checkbox", select = "None")
-  } else {
-    updateCheckboxes(crownDendrometers_buff, "crownDendrometers_checkbox", select = "All")
-  }
-})
-
 observeEvent(input$selectall_AirTemp, {
   if(input$selectall_AirTemp == 0) {
     return(NULL)

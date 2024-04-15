@@ -80,23 +80,6 @@ new_plotting <- function(res, ...) {
   return(p)
 }
 
-crownDendrometers_reactive <- reactiveValues(res = NULL)
-crownDendrometers_trigger <- reactive({
-  list(input$crownDendrometers_action, input$tabset)
-  #    list(input$tabset)
-})
-
-observeEvent(ignoreInit=TRUE, crownDendrometers_trigger(), {
-  if(input$tabset == 'CrownDendrometers') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      crownDendrometers_reactive$res <- get_data(input$crownDendrometers_checkbox, 1, input$crownDendrometers_compareYears)
-    })
-  }
-})
-output$crownDendrometers_plotly <- renderPlotly({
-  new_plotting(crownDendrometers_reactive$res)
-})
-
 airTemp_reactive <- reactiveValues(res = NULL)
 airTemp_trigger <- reactive({
   list(input$airTemp_action, input$tabset)

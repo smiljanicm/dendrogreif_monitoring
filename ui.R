@@ -17,23 +17,6 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           )
                           
                  ),
-                 tabPanel("CrownDendrometers",
-                          sidebarLayout(
-                            sidebarPanel(
-                              checkboxInput("crownDendrometers_compareYears", 
-                                            "Compare years"),
-                              actionLink("selectall_CrownDendrometers","Select All"),
-                              actionButton("crownDendrometers_action", "Update"),
-                              checkboxGroupInput("crownDendrometers_checkbox", 
-                                                 "Choose dendrometers:",
-                                                 choices = character(0))
-                            ),
-                            mainPanel(plotlyOutput("crownDendrometers_plotly") %>% 
-                                        withSpinner(type=3, 
-                                                    color.background = "white", 
-                                                    hide.ui = FALSE))
-                          )
-                 ),
                  tabPanel("Air Temperature",
                           sidebarLayout(
                             sidebarPanel(
