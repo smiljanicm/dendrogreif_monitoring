@@ -4,6 +4,8 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
     map_dbl(function(x){
       string_vec <- unlist(strsplit(x,'_'))
       as.numeric(string_vec[[length(string_vec)]])}) #Line needs cleaning for now location_id must be last in the string
+  locs <- na.omit(locs)
+  if(length(locs)==0) { return() }
   sql_query <- paste0("SELECT o.timestamp as timestamp, o.value, p.label, l.description, l.height_above_ground as height, v.description as variable, l.location_id
                          FROM ", source, " as o
                          LEFT JOIN locations as l USING(location_id)
@@ -109,9 +111,9 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
   if(input$tabset == 'Plot/Download') {
     withProgress(message = 'Getting data...', value=0.5, {
       s <- input$seriesDT_rows_selected
+      print('These rows were selected:\n\n')
+      print(s, sep = ', ')
       if (length(s)) {
-        print('These rows were selected:\n\n')
-        print(s, sep = ', ')
         var_buff <- all_buff %>% filter(site %in% input$selectedSites)
         sensor_list_dt <- var_buff[s,] %>%
           unite('cons', everything()) %>%
