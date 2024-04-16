@@ -27,7 +27,10 @@ server <- function(input, output, session) {
   
   observeEvent(input$selectedSites, {
     updateCheckboxes(power_buff, "powerCheckbox")
+    output$seriesDT = NULL
     output$seriesDT = renderDT({all_buff %>% filter(site %in% input$selectedSites)}, filter = list(position = 'top', clear = FALSE))
+    seriesDT_proxy <- DT::dataTableProxy("seriesDT")
+    DT::selectRows(seriesDT_proxy, NULL)
   }, ignoreNULL = FALSE)
   
   source("plotting_reactive.R", local = TRUE)
