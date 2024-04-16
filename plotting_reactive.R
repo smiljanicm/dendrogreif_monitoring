@@ -106,7 +106,7 @@ observeEvent(input$AllSeriesDateRangePlus, {
 })
 
 observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
-  if(input$tabset == 'All Series') {
+  if(input$tabset == 'Plot/Download') {
     withProgress(message = 'Getting data...', value=0.5, {
       s <- input$seriesDT_rows_selected
       if (length(s)) {

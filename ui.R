@@ -48,7 +48,7 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                             )
                           )
                  ),
-                 tabPanel("All Series", 
+                 tabPanel("Plot/Download", 
                           sidebarLayout(
                             sidebarPanel(
                               checkboxInput("compareYearsAllSeries", 
@@ -65,15 +65,14 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                            selected = "raw"),
                               dateRangeInput("AllSeriesDateRange", label = "Select Date Range", start = '2013-01-01', end = Sys.Date()),
                               actionButton("AllSeriesDateRangePlus", label = "Add a month to dates"),
-                              actionButton("AllSeriesAction", "Update"),
-                              checkboxGroupInput("AllSeriesVariableCheckbox", 
-                                                 "Choose variables:",
-                                                 choiceNames = all_variables$description,
-                                                 choiceValues = all_variables$variable_id),
-                              actionLink("selectall_AllSeries","Select All"),
-                              checkboxGroupInput("AllSeriesCheckbox", 
-                                                 "Choose dendrometers:",
-                                                 choices = character(0))
+                              selectizeInput("AllSeriesVariableCheckbox", "Variables", 
+                                             choices = map(1:nrow(all_variables), 
+                                                           function(x) { 
+                                                             all_variables$variable_id[[x]]
+                                                             }) 
+                                             %>% set_names(all_variables$description), multiple = T),
+                              actionButton("AllSeriesAction", "Plot"),
+                              actionButton("AllSeriesDownload", "Download Data (does nothing now)")
                             ),
                             mainPanel(DT::DTOutput("seriesDT"),
                                       plotlyOutput("AllSeriesPlotly") %>% 

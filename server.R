@@ -27,7 +27,6 @@ server <- function(input, output, session) {
   
   observeEvent(input$selectedSites, {
     updateCheckboxes(power_buff, "powerCheckbox")
-    updateCheckboxes(all_buff, "AllSeriesCheckbox")
     output$seriesDT = renderDT({all_buff %>% filter(site %in% input$selectedSites)}, filter = list(position = 'top', clear = FALSE))
   }, ignoreNULL = FALSE)
   

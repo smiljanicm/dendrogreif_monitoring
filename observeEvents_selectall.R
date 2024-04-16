@@ -8,16 +8,6 @@ observeEvent(input$selectall_sites, {
   }
 })
 
-observeEvent(input$selectall_AllSeries, {
-  if(input$selectall_AllSeries == 0) {
-    return(NULL)
-  } else if (input$selectall_AllSeries%%2 == 0) {
-    updateCheckboxes(all_buff, "AllSeriesCheckbox", select = "None")
-  } else {
-    updateCheckboxes(all_buff, "AllSeriesCheckbox", select = "All")
-  }
-})
-
 observeEvent(input$selectall_Power, {
   if(input$selectall_Power == 0) {
     return(NULL)
@@ -27,3 +17,5 @@ observeEvent(input$selectall_Power, {
     updateCheckboxes(power_buff, "powerCheckbox", select = "All")
   }
 })
+
+
