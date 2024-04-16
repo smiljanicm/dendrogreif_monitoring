@@ -84,4 +84,3 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           )
                  ),
 )
-

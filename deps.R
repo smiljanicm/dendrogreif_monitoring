@@ -76,4 +76,3 @@ clean_sensor <- function(data, clean_df = cdff, locID = 2, varID = 1, clsetID = 
 }
 
 cdff <- tbl(con, 'cleaning_instructions') %>% collect()
-print(tail(cdff))

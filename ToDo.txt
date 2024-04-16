@@ -6,7 +6,6 @@ Update Slack/mail with the link to the shiny app/check http://dgmonitor:3838
 build MVP list
 -- Splash screen (Better index.html)
 -- All Series - turn checkbox to table. Add additional info below plot (interface_id, ingestion date, should be known)
--- Start removing individual panels (pay attention to the observeEvents_selectall.R and plotting_reactive.R)
 
 After MVP (with Rene) - reserve address for the public access
 
@@ -43,4 +42,3 @@ Build the list of files
 Clean static already processed files when test_insert time over 12 hours
 
 ### R package for access
-
