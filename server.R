@@ -7,32 +7,6 @@ server <- function(input, output, session) {
   
   source("observeEvents_selectall.R", local = TRUE)
 
-  updateCheckboxes <- function(buff, checkgroup, selection = input$selectedSites, select = "None"){
-    sensor_list <- buff %>%
-      filter(site %in% selection) %>%
-      unite('cons', everything()) %>%
-      unlist()
-    names(sensor_list) <- NULL
-    if(select == "None") {
-      updateCheckboxGroupInput(session, checkgroup,
-                               label = paste("There are", length(sensor_list), "sensors in the list"),
-                               choices = sensor_list)
-      
-    } else if (select == "All") {
-      updateCheckboxGroupInput(session, checkgroup,
-                               label = paste("There are", length(sensor_list), "sensors in the list"),
-                               choices = sensor_list, selected = sensor_list)
-    }
-  }
-  
-  observeEvent(input$selectedSites, {
-    updateCheckboxes(power_buff, "powerCheckbox")
-    output$seriesDT = NULL
-    output$seriesDT = renderDT({all_buff %>% filter(site %in% input$selectedSites)}, filter = list(position = 'top', clear = FALSE))
-    seriesDT_proxy <- DT::dataTableProxy("seriesDT")
-    DT::selectRows(seriesDT_proxy, NULL)
-  }, ignoreNULL = FALSE)
-  
   source("plotting_reactive.R", local = TRUE)
   
   output$location_status <- renderDT({loc_buff}, filter = list(position = 'top', clear = FALSE))

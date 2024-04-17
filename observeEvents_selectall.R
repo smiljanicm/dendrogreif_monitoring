@@ -8,14 +8,9 @@ observeEvent(input$selectall_sites, {
   }
 })
 
-observeEvent(input$selectall_Power, {
-  if(input$selectall_Power == 0) {
-    return(NULL)
-  } else if (input$selectall_Power%%2 == 0) {
-    updateCheckboxes(power_buff, "powerCheckbox", select = "None")
-  } else {
-    updateCheckboxes(power_buff, "powerCheckbox", select = "All")
-  }
-})
-
-
+observeEvent(input$selectedSites, {
+  output$seriesDT = NULL
+  output$seriesDT = renderDT({all_buff %>% filter(site %in% input$selectedSites)}, filter = list(position = 'top', clear = FALSE))
+  seriesDT_proxy <- DT::dataTableProxy("seriesDT")
+  DT::selectRows(seriesDT_proxy, NULL)
+}, ignoreNULL = FALSE)

@@ -82,21 +82,6 @@ new_plotting <- function(res, ...) {
   return(p)
 }
 
-power_reactive <- reactiveValues(res = NULL)
-power_trigger <- reactive({
-  list(input$Power_action, input$tabset)
-})
-observeEvent(ignoreInit=TRUE, power_trigger(), {
-  if(input$tabset == 'Power Supply') {
-    withProgress(message = 'Getting data...', value=0.5, {
-      power_reactive$res <- get_data(input$powerCheckbox, 6, input$compareYearsPower)
-    })
-  }
-})
-output$powerPlotly <- renderPlotly({
-  new_plotting(power_reactive$res)
-})
-
 AllSeries_reactive <- reactiveValues(res = NULL)
 AllSeries_trigger <- reactive({
   list(input$AllSeriesAction, input$tabset)

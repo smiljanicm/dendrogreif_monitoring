@@ -17,24 +17,6 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           )
                           
                  ),
-                 tabPanel("Power Supply",
-                          sidebarLayout(
-                            sidebarPanel(
-                              checkboxInput("compareYearsPower", 
-                                            "Compare years"),
-                              actionLink("selectall_Power","Select All"),
-                              actionButton("Power_action", "Update plot"),
-                              checkboxGroupInput("powerCheckbox", 
-                                                 "Choose sensors:",
-                                                 choices = character(0))
-                            ),
-                            mainPanel(plotlyOutput("powerPlotly") %>% 
-                                        withSpinner(type=3, 
-                                                    color.background = "white", 
-                                                    hide.ui = FALSE))
-                          )
-                          
-                 ),
                  tabPanel("Plot/Download", 
                           sidebarLayout(
                             sidebarPanel(
