@@ -35,19 +35,6 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           )
                           
                  ),
-                 tabPanel("Status",
-                          tabsetPanel(
-                            tabPanel("Power",
-                                     DT::DTOutput("power_status")
-                            ),
-                            tabPanel("Site Info",
-                                     DT::DTOutput("site_status")
-                            ),
-                            tabPanel("Raw",
-                                     DT::DTOutput("location_status")
-                            )
-                          )
-                 ),
                  tabPanel("Plot/Download", 
                           sidebarLayout(
                             sidebarPanel(
@@ -79,6 +66,19 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                         withSpinner(type=3, 
                                                     color.background = "white", 
                                                     hide.ui = FALSE)
+                            )
+                          )
+                 ),
+                 tabPanel("Status",
+                          tabsetPanel(
+                            tabPanel("Power",
+                                     DT::DTOutput("power_status")
+                            ),
+                            tabPanel("Site Info",
+                                     DT::DTOutput("site_status")
+                            ),
+                            tabPanel("Raw",
+                                     DT::DTOutput("location_status")
                             )
                           )
                  ),
