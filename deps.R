@@ -29,9 +29,6 @@ sites_df <- sites_df %>% mutate(lat_long_nest = strsplit(gsub('^\\(|\\)', '', gp
   mutate(Lat = as.numeric(Lat)) %>%
   mutate(Long = as.numeric(Long))
 
-overviews_buff <- tbl(con, "site_variable_overview") %>% 
-  collect()
-
 loc_buff <-  tbl(con, "location_overview") %>% 
   collect() %>% 
   mutate(site = factor(site),
