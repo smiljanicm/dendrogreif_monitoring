@@ -21,8 +21,9 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
                                                 TRUE ~ paste0(label, '_', variable, '_', height, '_', location_id))) %>% select(timestamp, value, location_id)
   
   if(toclean != 'raw') {
-#    print(toclean)
-#    print(res %>% head())
+    print(toclean)
+    print(res %>% head())
+    cdff <- tbl(con, 'cleaning_instructions') %>% collect()
     if(!is.null(res)) {
       print(locs)
 #      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
