@@ -12,7 +12,17 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                             ),
                             mainPanel = mainPanel(
                               leafletOutput("sitemap", height = '400'),
-                              DT::DTOutput("sites")
+                              tabsetPanel(
+                                tabPanel("Power",
+                                         DT::DTOutput("power_status")
+                                ),
+                                tabPanel("Site Info",
+                                         DT::DTOutput("site_status")
+                                ),
+                                tabPanel("Raw",
+                                         DT::DTOutput("location_status")
+                                )
+                              )
                             )
                           )
                           
@@ -50,18 +60,5 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                                     hide.ui = FALSE)
                             )
                           )
-                 ),
-                 tabPanel("Status",
-                          tabsetPanel(
-                            tabPanel("Power",
-                                     DT::DTOutput("power_status")
-                            ),
-                            tabPanel("Site Info",
-                                     DT::DTOutput("site_status")
-                            ),
-                            tabPanel("Raw",
-                                     DT::DTOutput("location_status")
-                            )
-                          )
-                 ),
+                 )
 )
