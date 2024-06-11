@@ -116,11 +116,20 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
                                          minutes=0:59)
       }      
     })
-  } 
+    
+    if(!is.null(AllSeries_reactive$res)){
+    unq_labels <- AllSeries_reactive$res %>% distinct(label) %>% unlist()
+    v <- list()
+    for(i in 1:length(unq_labels)) {
+      print(i)
+      v[[i]] <- new_plotting(AllSeries_reactive$res %>% filter(label == unq_labels[[i]])) 
+      
+    }
+    output$Plots <- renderUI ({
+      v
+    })
+    } 
+  }
 })
 
-output$Plots <- renderUI ({
-  renderPlotly({
-    new_plotting(AllSeries_reactive$res)
-  })
-})
+
