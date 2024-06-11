@@ -54,10 +54,7 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                               actionButton("AllSeriesDownload", "Download Data (does nothing now)")
                             ),
                             mainPanel(DT::DTOutput("seriesDT"),
-                                      plotlyOutput("AllSeriesPlotly") %>% 
-                                        withSpinner(type=3, 
-                                                    color.background = "white", 
-                                                    hide.ui = FALSE)
+                                      uiOutput("Plots")
                             )
                           )
                  )

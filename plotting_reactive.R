@@ -118,6 +118,9 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
     })
   } 
 })
-output$AllSeriesPlotly <- renderPlotly({
-  new_plotting(AllSeries_reactive$res)
+
+output$Plots <- renderUI ({
+  renderPlotly({
+    new_plotting(AllSeries_reactive$res)
+  })
 })
