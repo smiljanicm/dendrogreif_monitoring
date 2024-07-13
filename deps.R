@@ -37,6 +37,15 @@ loc_buff <-  tbl(con, "location_overview") %>%
          loc_description = factor(loc_description),
          variable = factor(variable))
 
+batt_buff <- loc_buff %>%
+  filter(variable == "Battery") %>%
+  select(site, loc_description, last_timestamp, most_recent_value) %>%
+  separate(loc_description, c('loc_desc', 'online', 'Battery'),  ';') %>%
+  mutate(days_from_now = difftime(Sys.time(), last_timestamp, units = "days")) %>%
+  mutate(days_from_now = as.numeric(days_from_now)) %>%
+  mutate(should_be_visited = (most_recent_value < 12) | (days_from_now > 3))
+
+print(batt_buff)
 all_buff <- tbl(con, "site_locs_overview") %>% 
   collect() %>%
   arrange(site, species, label, height)

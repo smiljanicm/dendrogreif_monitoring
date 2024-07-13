@@ -19,12 +19,7 @@ server <- function(input, output, session) {
       mutate(days_from_now = difftime(Sys.time(), last_timestamp, units = "days"))
   }, filter = list(position = 'top', clear = FALSE))
   output$power_status <- renderDT({
-    datatable(loc_buff %>%
-      filter(variable == "Battery") %>%
-      select(site, loc_description, last_timestamp, most_recent_value) %>%
-      separate(loc_description, c('loc_desc', 'online', 'Battery'),  ';') %>%
-      mutate(days_from_now = difftime(Sys.time(), last_timestamp, units = "days")) %>%
-      mutate(days_from_now = as.numeric(days_from_now)), filter = list(position = 'top', clear = FALSE)) %>% 
+    datatable(batt_buff, filter = list(position = 'top', clear = FALSE)) %>% 
       formatStyle('most_recent_value', backgroundColor = styleInterval(c(11.8, 12), c('red', 'yellow', 'green'))) %>% 
       formatStyle('days_from_now', backgroundColor = styleInterval(c(1, 5), c('green', 'yellow', 'red')))
   })
