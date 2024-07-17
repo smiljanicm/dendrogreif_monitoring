@@ -43,7 +43,7 @@ batt_buff <- loc_buff %>%
   separate(loc_description, c('loc_desc', 'online', 'Battery'),  '; ') %>%
   mutate(days_from_now = difftime(Sys.time(), last_timestamp, units = "days")) %>%
   mutate(days_from_now = as.numeric(days_from_now)) %>%
-  mutate(should_be_visited = case_when(online == 'Online' ~ ((most_recent_value < 12) | (days_from_now > 5)),
+  mutate(should_be_visited = case_when(online == 'Online' ~ ((most_recent_value < 12.2) | (days_from_now > 5)),
                                         TRUE ~ days_from_now > 35))
 
 print(batt_buff)
