@@ -19,7 +19,9 @@ server <- function(input, output, session) {
       mutate(days_from_now = difftime(Sys.time(), last_timestamp, units = "days"))
   }, filter = list(position = 'top', clear = FALSE))
   output$power_status <- renderDT({
-    datatable(batt_buff, filter = list(position = 'top', clear = FALSE)) %>% 
+    datatable(batt_buff %>% arrange(desc(online), desc(should_be_visited)), 
+    		filter = list(position = 'top', clear = FALSE),
+    		options = list(pageLength = 50)) %>% 
       formatStyle('most_recent_value', backgroundColor = styleInterval(c(12.01, 12.2), c('red', 'yellow', 'green'))) %>% 
       formatStyle('days_from_now', backgroundColor = styleInterval(c(1, 5), c('green', 'yellow', 'red'))) %>%
       formatStyle('should_be_visited', backgroundColor = styleEqual(c(F, T), c('green', 'red')))
