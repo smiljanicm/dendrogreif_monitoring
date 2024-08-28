@@ -33,6 +33,13 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
     cdff <- tbl(con, 'cleaning_instructions') %>% collect()
     if(!is.null(res)) {
       print(locs)
+      print(vars)
+      comb <- locs %>% map(function(loc = locs, var = vars) { data.frame(loc, vars) }) %>% 
+        bind_rows() %>% 
+        t() %>% 
+        as.data.frame()
+      print("comb")
+      print(comb)
 #      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
       res_clean <- locs %>% unlist() %>% map(function(x) {
           print(x)
