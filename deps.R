@@ -75,10 +75,6 @@ clean_sensor <- function(data, clean_df = cdff, locID = 2, varID = 1, clsetID = 
       args_list <- c(list(data=out), args_list)
       out <- do.call(corr, args_list)
     }
-    
   }
   return(out)
 }
-
-
-
