@@ -15,7 +15,9 @@ options(java.parameters = "-Xss2560k")
 # Connection to the database
 con <- DBI::dbConnect(RPostgres::Postgres(), 
                       dbname="monitoring_raw", 
-                      host="localhost", 
+                      host='localhost',
+#                      host='141.53.44.233',
+#                      password = 'temp2',
                       user='rstudio_read')
 
 sites <- tbl(con, "sites")

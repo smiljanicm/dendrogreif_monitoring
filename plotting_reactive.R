@@ -4,9 +4,16 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
     map_dbl(function(x){
       string_vec <- unlist(strsplit(x,'_'))
       as.numeric(string_vec[[length(string_vec)]])}) #Line needs cleaning for now location_id must be last in the string
+  print("locations:")
+  print(locs)
   locs <- na.omit(locs)
+  vars <- variable_id %>% map_dbl(function(x) { as.numeric(x) })
+  
+  print(vars)
+  print(class(vars))
   if(length(locs)==0) { return() }
-  sql_query <- paste0("SELECT o.timestamp as timestamp, o.value, p.label, l.description, l.height_above_ground as height, v.description as variable, l.location_id
+  sql_query <- paste0("SELECT o.timestamp as timestamp, o.value, p.label, l.description, v.variable_id,
+                       l.height_above_ground as height, v.description as variable, l.location_id
                          FROM ", source, " as o
                          LEFT JOIN locations as l USING(location_id)
                          LEFT JOIN plates as p USING(plate_id)
@@ -17,8 +24,8 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
                            AND o.timestamp BETWEEN '", start, "'::timestamp AND '", end, "'::timestamp
                          ORDER BY o.timestamp")
   res <- DBI::dbGetQuery(con, sql_query)
-  res <- res %>% mutate(location_id = case_when(is.null(label) ~ paste0(description, '_', variable, '_', height, '_', location_id),
-                                                TRUE ~ paste0(label, '_', variable, '_', height, '_', location_id))) %>% select(timestamp, value, location_id)
+  res <- res %>% mutate(location_id = case_when(is.null(label) ~ paste0(variable_id, '_', description, '_', variable, '_', height, '_', location_id),
+                                                TRUE ~ paste0(variable_id, '_', label, '_', variable, '_', height, '_', location_id))) %>% select(timestamp, value, location_id)
   
   if(toclean != 'raw') {
     print(toclean)
@@ -28,7 +35,7 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
       print(locs)
 #      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
       res_clean <- locs %>% unlist() %>% map(function(x) {
-#          print(x)
+          print(x)
           t <- res %>% rename("TIMESTAMP" = timestamp) %>% rename("Sensor" = value) %>%
             filter(grepl(paste0('_',x), location_id)) %>%
             clean_sensor(locID = x, clean_df = cdff)
@@ -66,6 +73,7 @@ new_plotting <- function(res, ...) {
     res <- res %>% group_by(label) %>% slice_sample(prop=0.75) %>% arrange(label, time)
   }
   print(res %>% group_by(label) %>% summarize(n = n()))
+  lbs <- res %>% distinct(label)
   p <- plot_ly(
     x = res$time,
     y = res$value,
@@ -73,12 +81,12 @@ new_plotting <- function(res, ...) {
     alpha = 0.8,
     type = 'scatter',
     mode = 'line') %>% 
-    layout(title = paste0("Plotting ", nrow(res), " data points from ", res_dp_orig, " initially selected.")) %>%
+    layout(title = paste0(lbs, "\nPlotting ", nrow(res), " data points from ", res_dp_orig, " initially selected.")) %>%
     toWebGL() 
   if(res_dp_orig > 50000) {
     p <- p %>%
       layout(xaxis = list(fixedrange = TRUE), yaxis = list(fixedrange = TRUE),
-             title = paste0("Plotting ", nrow(res), " data points from ", res_dp_orig, " initially selected.\n Zooming disabled (keep the number of points < 50000)"))
+             title = paste0(lbs, "\nPlotting ", nrow(res), " data points from ", res_dp_orig, " initially selected.\n Zooming disabled (keep the number of points < 50000)"))
   }
   return(p)
 }
