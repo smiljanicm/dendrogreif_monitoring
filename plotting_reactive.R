@@ -41,12 +41,30 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
       print("comb")
       print(comb)
 #      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
-      res_clean <- locs %>% unlist() %>% map(function(x) {
-          print(x)
-          t <- res %>% rename("TIMESTAMP" = timestamp) %>% rename("Sensor" = value) %>%
-            filter(grepl(paste0('_',x), location_id)) %>%
-            clean_sensor(locID = x, clean_df = cdff)
-          t
+      res_clean <- comb %>% map(function(com) {
+        print("com:")
+        print(com)
+        x <- com[[1]]
+        v <- com[[2]]
+        print("x:")
+        print(x)
+        print("v:")
+        print(v)
+        
+        t <- res %>% rename("TIMESTAMP" = timestamp) %>% 
+          rename("Sensor" = value) %>%
+#          filter(grepl(paste0('_',x), location_id)) %>%
+          mutate(locs = location_id) %>%  
+          separate(locs, c("variable_id", "label", "variable", "height", "loc_id"), sep="_") 
+        print(t)
+        t <- t %>% 
+          filter(loc_id == x) %>%
+          filter(variable_id == v) %>%
+          select(TIMESTAMP, Sensor, location_id) 
+        print(t %>% head())
+        t <- t %>%
+          clean_sensor(locID = x, varID = v, clean_df = cdff)
+        t
         }) %>% bind_rows() %>% rename("timestamp" = TIMESTAMP, "value" = Sensor) %>% arrange(timestamp)
       if(toclean == "clean") {
         res <- res_clean

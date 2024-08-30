@@ -66,6 +66,8 @@ clean_sensor <- function(data, clean_df = cdff, locID = 2, varID = 1, clsetID = 
     select(correction, arguments)
   out <- data
   print(clean_df)
+  print(out %>% head())
+  out %>% head() %>% print()
   if(nrow(clean_df) > 0) {
     for(i in 1:nrow(clean_df)){
       corr <- clean_df[[i, "correction"]]
