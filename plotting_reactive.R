@@ -69,8 +69,8 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
       if(toclean == "clean") {
         res <- res_clean
       } else if(toclean == "compare") {
-        res <- res_clean %>% mutate(location_id = paste0(location_id, '_1.cleaned')) %>%
-          bind_rows(res %>% mutate(location_id = paste0(location_id, '_0.raw')))
+        res <- res_clean %>% mutate(location_id = paste0(location_id, '/1.cleaned')) %>%
+          bind_rows(res %>% mutate(location_id = paste0(location_id, '/0.raw')))
       }
     }
   }
@@ -151,11 +151,17 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
     })
     
     if(!is.null(AllSeries_reactive$res)){
-    unq_labels <- AllSeries_reactive$res %>% distinct(label) %>% unlist()
+      AllSeries_reactive$res <- AllSeries_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
+    unq_labels <- AllSeries_reactive$res %>% 
+      distinct(label) %>% 
+      unlist()
     v <- list()
     for(i in 1:length(unq_labels)) {
-      print(i)
-      v[[i]] <- new_plotting(AllSeries_reactive$res %>% filter(label == unq_labels[[i]])) 
+      print(paste0('label: ',i))
+      
+      plot_data <- AllSeries_reactive$res %>% filter(label == unq_labels[[i]])
+      plot_data <- plot_data %>% mutate(label = paste0(label, '_', cleaning)) 
+      v[[i]] <- new_plotting(plot_data) 
       
     }
     output$Plots <- renderUI ({
