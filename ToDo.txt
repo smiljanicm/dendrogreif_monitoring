@@ -16,22 +16,8 @@ locations:
   move horizontal geoinfo: (gps, treeID, species_id, etc...) to plates (to reduce redundancy)
 plates:
   name_change
-new_table: files from file_sensor_intefaces containing:
-  filepath + timestamp_column + is_processed
-  sensor_file_interfaces modification:
-    add column containing file_id
-    drop filepath, timestamp_column, is_processed
     
 Add new streams
-  Dendrometers: PAcer, Pdoug, Ppine, Plarch, Predoak, P
-  SapFlow for: ET, EA, EU,
-  Temp RH for: Woepkendorf
-  Battery for: add strems from *_Status tables for offline sites: 
-  Soil Temp for: Ladebow, Woepkendorf, Vilm, EM, EU
-  VWC for: Ladebow, Vilm, EM
-  Permittivity: Ladebow, Vilm, EM, EU
-  Bulk_EC: Ladebow, Vilm, EM, EU
-  
   TFL: Demmin
   Wind: Demmin
   Rain: Demmin
