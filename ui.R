@@ -2,19 +2,28 @@ source("deps.R")
 # Define UI for application that draws a histogram
 ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                  tabPanel("Map", 
+                          tags$script(HTML("$(function(){ 
+                                              $(document).keyup(function(e) {
+                                                if (e.which == 80) {
+                                                  $('#Plot_series').click()
+                                                }
+                                              });
+                          })")),
                           sidebarLayout(
                             sidebarPanel(
                               actionLink("selectall_sites","Select All"),
                               checkboxGroupInput("selectedSites", 
                                                  "Choose sites:",
                                                  choices = sites_df$name,
-                                                 inline=F)
+                                                 inline=F),
+                              actionButton("Plot_series", label = "Plot [p]")
                             ),
                             mainPanel = mainPanel(
                               leafletOutput("sitemap", height = '400'),
-                              tabsetPanel(
+                              tabsetPanel(id='seriestabs',
                                 tabPanel("Power",
-                                         DT::DTOutput("power_status")
+                                         DT::DTOutput("power_status"),
+                                         uiOutput("Plots_power")
                                 ),
                                 tabPanel("Site Info",
                                          DT::DTOutput("site_status")
@@ -28,6 +37,13 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                           
                  ),
                  tabPanel("Plot/Download", 
+                          tags$script(HTML("$(function(){ 
+                                              $(document).keyup(function(e) {
+                                                if (e.which == 80) {
+                                                  $('#AllSeriesAction').click()
+                                                }
+                                              });
+                          })")),
                           sidebarLayout(
                             sidebarPanel(
                               checkboxInput("compareYearsAllSeries", 
@@ -50,6 +66,7 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                                              all_variables$variable_id[[x]]
                                                              }) 
                                              %>% set_names(all_variables$description), multiple = T),
+                              
                               actionButton("AllSeriesAction", "Plot"),
                               actionButton("AllSeriesDownload", "Download Data (does nothing now)")
                             ),

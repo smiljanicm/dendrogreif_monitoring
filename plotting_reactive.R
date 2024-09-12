@@ -40,7 +40,7 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
         as.data.frame()
       print("comb")
       print(comb)
-#      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
+      #      res_clean <- res %>% distinct(location_id) %>% unlist() %>%
       res_clean <- comb %>% map(function(com) {
         print("com:")
         print(com)
@@ -53,7 +53,7 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
         
         t <- res %>% rename("TIMESTAMP" = timestamp) %>% 
           rename("Sensor" = value) %>%
-#          filter(grepl(paste0('_',x), location_id)) %>%
+          #          filter(grepl(paste0('_',x), location_id)) %>%
           mutate(locs = location_id) %>%  
           separate(locs, c("variable_id", "label", "variable", "height", "loc_id"), sep="_") 
         print(t)
@@ -65,7 +65,7 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
         t <- t %>%
           clean_sensor(locID = x, varID = v, clean_df = cdff)
         t
-        }) %>% bind_rows() %>% rename("timestamp" = TIMESTAMP, "value" = Sensor) %>% arrange(timestamp)
+      }) %>% bind_rows() %>% rename("timestamp" = TIMESTAMP, "value" = Sensor) %>% arrange(timestamp)
       if(toclean == "clean") {
         res <- res_clean
       } else if(toclean == "compare") {
@@ -125,7 +125,6 @@ observeEvent(input$AllSeriesDateRangePlus, {
   new_end <- input$AllSeriesDateRange[[2]] %m+% months(1)
   updateDateRangeInput(inputId = "AllSeriesDateRange", start = new_start, end = new_end)
 })
-
 observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
   if(input$tabset == 'Plot/Download') {
     withProgress(message = 'Getting data...', value=0.5, {
@@ -139,36 +138,96 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
           unlist()
         names(sensor_list_dt) <- NULL
         print(sensor_list_dt)
-      AllSeries_reactive$res <- get_data(sensor_list_dt, 
-                                         input$AllSeriesVariableCheckbox,
-                                          input$compareYearsAllSeries, 
-                                          source = input$AllSeriesSource,
-                                          start = input$AllSeriesDateRange[[1]],
-                                          end = input$AllSeriesDateRange[[2]],
-                                          toclean = input$AllSeriesToClean,
-                                         minutes=0:59)
+        AllSeries_reactive$res <- get_data(sensor_list_dt, 
+                                           input$AllSeriesVariableCheckbox,
+                                           input$compareYearsAllSeries, 
+                                           source = input$AllSeriesSource,
+                                           start = input$AllSeriesDateRange[[1]],
+                                           end = input$AllSeriesDateRange[[2]],
+                                           toclean = input$AllSeriesToClean,
+                                           minutes=0:59)
       }      
     })
     
     if(!is.null(AllSeries_reactive$res)){
       AllSeries_reactive$res <- AllSeries_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
-    unq_labels <- AllSeries_reactive$res %>% 
-      distinct(label) %>% 
-      unlist()
-    v <- list()
-    for(i in 1:length(unq_labels)) {
-      print(paste0('label: ',i))
-      
-      plot_data <- AllSeries_reactive$res %>% filter(label == unq_labels[[i]])
-      plot_data <- plot_data %>% mutate(label = paste0(label, '_', cleaning)) 
-      v[[i]] <- new_plotting(plot_data) 
-      
-    }
-    output$Plots <- renderUI ({
-      v
-    })
+      unq_labels <- AllSeries_reactive$res %>% 
+        distinct(label) %>% 
+        unlist()
+      v <- list()
+      for(i in 1:length(unq_labels)) {
+        print(paste0('label: ',i))
+        
+        plot_data <- AllSeries_reactive$res %>% filter(label == unq_labels[[i]])
+        plot_data <- plot_data %>% mutate(label = paste0(label, '_', cleaning)) 
+        v[[i]] <- new_plotting(plot_data) 
+        
+      }
+      output$Plots <- renderUI ({
+        v
+      })
     } 
   }
 })
 
+PlotSeries_reactive <- reactiveValues(res = NULL)
+PlotSeries_trigger <- reactive({
+  list(input$Plot_series, input$tabset, input$seriestabs)
+})
+observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
+  if(input$tabset == 'Map') {
+    if(input$seriestabs == 'Power')
+      withProgress(message = 'Getting data...', value=0.5, {
+        s <- input$power_status_rows_selected
+        print('These rows were selected:\n\n')
+        print(s, sep = ', ')
+        if (length(s)) {
+          print(names(input))
+          print(input$power_status_rows_all)
+  #         var_buff <- batt_buff %>% filter(site %in% input$selectedSites)
+          var_buff <- batt_buff_showed[s,]
+          
+          sensor_list_dt <- var_buff %>%
+            unite('cons', everything()) %>%
+            unlist()
+          names(sensor_list_dt) <- NULL
+          print(sensor_list_dt)
+          PlotSeries_reactive$res <- get_data(sensor_list_dt, 
+                                             6,
+                                             0, 
+                                             source = "obs_120",
+                                             start = input$AllSeriesDateRange[[1]],
+                                             end = input$AllSeriesDateRange[[2]],
+                                             toclean = 'raw',
+                                             minutes=0:59)
+    
+    if(!is.null(PlotSeries_reactive$res)){
+      PlotSeries_reactive$res <- PlotSeries_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
+      unq_labels <- PlotSeries_reactive$res %>% 
+        distinct(label) %>% 
+        unlist()
+      v <- list()
+      print(sensor_list_dt)
+      for(i in 1:length(unq_labels)) {
+        print(paste0('label: ',i))
+        sldt <- sensor_list_dt[[i]]
+        
+        print(sldt)
+        sldt_cut <- paste0(sldt %>% str_sub(end = 20), '...', str_sub(sldt, start = -10))
+        plot_data <- PlotSeries_reactive$res %>% filter(label == unq_labels[[i]])
+        plot_data <- plot_data %>% mutate(label = paste0(label, '_', sldt_cut)) 
+        v[[i]] <- new_plotting(plot_data) 
+        
+      }
+      # output$Plots_power <- renderUI ({
+      #   v
+      # })
+      showModal(modalDialog(v))
+    } 
+ 
+        }      
+      })
+    
+  }
+})
 
