@@ -168,7 +168,8 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
           #   v
           # })
           showModal(modalDialog(v,
-                                downloadButton("downloadData", "Download")))
+                                downloadButton("downloadData", "Download"),
+                                easyClose = TRUE))
           output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv') },
                                                  content = function(file) {
                                                    write_csv(AllSeries_reactive$res %>% 
@@ -179,7 +180,8 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
                                                  })
         }
       }
-      else {showModal(modalDialog("NoData"))}
+      else {showModal(modalDialog("NoData",
+                                  easyClose = TRUE))}
     } 
   }
 })
@@ -236,7 +238,8 @@ observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
             #            print("Plot_series")
             #            print(PlotSeries_reactive$res)
             showModal(modalDialog(v,
-                                  downloadButton("downloadData", "Download")))
+                                  downloadButton("downloadData", "Download"),
+                                  easyClose = TRUE))
             output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv')  },
                                                    content = function(file) {
                                                      write_csv(PlotSeries_reactive$res %>% 
