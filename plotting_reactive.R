@@ -148,35 +148,38 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
                                            minutes=0:59)
       }      
     })
-    
+
     if(!is.null(AllSeries_reactive$res)){
-      AllSeries_reactive$res <- AllSeries_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
-      unq_labels <- AllSeries_reactive$res %>% 
-        distinct(label) %>% 
-        unlist()
-      v <- list()
-      for(i in 1:length(unq_labels)) {
-        print(paste0('label: ',i))
-        
-        plot_data <- AllSeries_reactive$res %>% filter(label == unq_labels[[i]])
-        plot_data <- plot_data %>% mutate(label = paste0(label, '_', cleaning)) 
-        v[[i]] <- new_plotting(plot_data) 
-        
+      if(nrow(AllSeries_reactive$res)>0){
+        AllSeries_reactive$res <- AllSeries_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
+        unq_labels <- AllSeries_reactive$res %>% 
+          distinct(label) %>% 
+          unlist()
+        v <- list()
+        for(i in 1:length(unq_labels)) {
+          print(paste0('label: ',i))
+          
+          plot_data <- AllSeries_reactive$res %>% filter(label == unq_labels[[i]])
+          plot_data <- plot_data %>% mutate(label = paste0(label, '_', cleaning)) 
+          v[[i]] <- new_plotting(plot_data) 
+          
+          
+          # output$Plots <- renderUI ({
+          #   v
+          # })
+          showModal(modalDialog(v,
+                                downloadButton("downloadData", "Download")))
+          output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv') },
+                                                 content = function(file) {
+                                                   write_csv(AllSeries_reactive$res %>% 
+                                                               rename("timestamp" = time) %>%
+                                                               arrange(label, timestamp) %>%
+                                                               separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
+                                                             file)
+                                                 })
+        }
       }
-      # output$Plots <- renderUI ({
-      #   v
-      # })
-      showModal(modalDialog(v,
-                            downloadButton("downloadData", "Download")))
-      output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv') },
-                                             content = function(file) {
-                                               write_csv(AllSeries_reactive$res %>% 
-                                                           rename("timestamp" = time) %>%
-                                                           arrange(label, timestamp) %>%
-                                                           separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
-                                                         file)
-                                             })
-      
+      else {showModal(modalDialog("NoData"))}
     } 
   }
 })
@@ -211,28 +214,27 @@ observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
                                               end = Sys.Date(),
                                               toclean = 'raw',
                                               minutes=0:59)
-          print(input$AllSeriesDateRange[[1]])
-  #        print(is.empty(PlotSeries_reactive$res))
-          if(!is.null(PlotSeries_reactive$res)){
+          print(nrow(PlotSeries_reactive$res))
+          if(nrow(PlotSeries_reactive$res)>0){
             PlotSeries_reactive$res <- PlotSeries_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
             unq_labels <- PlotSeries_reactive$res %>% 
               distinct(label) %>% 
               unlist()
             v <- list()
-#            print(sensor_list_dt)
+            #            print(sensor_list_dt)
             print(length(unq_labels))
             for(i in 1:length(unq_labels)) {
-#              print(paste0('label: ',i))
+              #              print(paste0('label: ',i))
               sldt <- sensor_list_dt[[i]]
-#              print(sldt)
+              #              print(sldt)
               sldt_cut <- paste0(sldt %>% str_sub(end = 20), '...', str_sub(sldt, start = -10))
               plot_data <- PlotSeries_reactive$res %>% filter(label == unq_labels[[i]])
               plot_data <- plot_data %>% mutate(label = paste0(label, '_', sldt_cut)) 
               v[[i]] <- new_plotting(plot_data) 
               
             }
-#            print("Plot_series")
-#            print(PlotSeries_reactive$res)
+            #            print("Plot_series")
+            #            print(PlotSeries_reactive$res)
             showModal(modalDialog(v,
                                   downloadButton("downloadData", "Download")))
             output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv')  },
@@ -240,7 +242,7 @@ observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
                                                      write_csv(PlotSeries_reactive$res %>% 
                                                                  rename("timestamp" = time) %>%
                                                                  arrange(label, timestamp) %>% 
-                                                               separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
+                                                                 separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
                                                                file)
                                                    })
           } 
