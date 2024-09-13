@@ -9,6 +9,10 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                                 }
                                               });
                           })")),
+                          tags$style(
+                            type = 'text/css',
+                            '.modal-dialog { width: fit-content !important; }'
+                          ),
                           sidebarLayout(
                             sidebarPanel(
                               actionLink("selectall_sites","Select All"),
