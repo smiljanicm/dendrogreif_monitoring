@@ -67,11 +67,10 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                                              }) 
                                              %>% set_names(all_variables$description), multiple = T),
                               
-                              actionButton("AllSeriesAction", "Plot"),
-                              actionButton("AllSeriesDownload", "Download Data (does nothing now)")
+                              actionButton("AllSeriesAction", "Plot [p]")
                             ),
-                            mainPanel(DT::DTOutput("seriesDT"),
-                                      uiOutput("Plots")
+                            mainPanel(DT::DTOutput("seriesDT")#,
+                                      #uiOutput("Plots")
                             )
                           )
                  )

@@ -15,9 +15,9 @@ options(java.parameters = "-Xss2560k")
 # Connection to the database
 con <- DBI::dbConnect(RPostgres::Postgres(), 
                       dbname="monitoring_raw", 
-                      host='localhost',
-#                      host='141.53.44.233',
-#                      password = 'temp2',
+#                      host='localhost',
+                      host='141.53.44.233',
+                      password = 'temp2',
                       user='rstudio_read')
 
 sites <- tbl(con, "sites")
@@ -33,6 +33,7 @@ sites_df <- sites_df %>% mutate(lat_long_nest = strsplit(gsub('^\\(|\\)', '', gp
 
 loc_buff <-  tbl(con, "location_overview") %>% 
   collect() %>% 
+  relocate(location_id, .after=last_col()) %>%
   mutate(site = factor(site),
          tree_id = factor(tree_id),
          location_type = factor(location_type),
@@ -47,7 +48,7 @@ print(loc_buff %>% head())
 
 batt_buff <- all_buff %>% 
   left_join(loc_buff, 
-            by=join_by(description==loc_description, site)) %>%
+            by=join_by(description==loc_description, site,location_id)) %>%
   filter(variable == "Battery") %>%
   select(site, description, last_timestamp, most_recent_value,location_id) %>%
   separate(description, c('loc_desc', 'online', 'Battery'),  '; ') %>%

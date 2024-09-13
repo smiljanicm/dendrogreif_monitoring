@@ -163,9 +163,20 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
         v[[i]] <- new_plotting(plot_data) 
         
       }
-      output$Plots <- renderUI ({
-        v
-      })
+      # output$Plots <- renderUI ({
+      #   v
+      # })
+      showModal(modalDialog(v,
+                            downloadButton("downloadData", "Download")))
+      output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv') },
+                                             content = function(file) {
+                                               write_csv(AllSeries_reactive$res %>% 
+                                                           rename("timestamp" = time) %>%
+                                                           arrange(label, timestamp) %>%
+                                                           separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
+                                                         file)
+                                             })
+      
     } 
   }
 })
@@ -184,7 +195,7 @@ observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
         if (length(s)) {
           print(names(input))
           print(input$power_status_rows_all)
-  #         var_buff <- batt_buff %>% filter(site %in% input$selectedSites)
+          #         var_buff <- batt_buff %>% filter(site %in% input$selectedSites)
           var_buff <- batt_buff_showed[s,]
           
           sensor_list_dt <- var_buff %>%
@@ -193,41 +204,48 @@ observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
           names(sensor_list_dt) <- NULL
           print(sensor_list_dt)
           PlotSeries_reactive$res <- get_data(sensor_list_dt, 
-                                             6,
-                                             0, 
-                                             source = "obs_120",
-                                             start = input$AllSeriesDateRange[[1]],
-                                             end = input$AllSeriesDateRange[[2]],
-                                             toclean = 'raw',
-                                             minutes=0:59)
-    
-    if(!is.null(PlotSeries_reactive$res)){
-      PlotSeries_reactive$res <- PlotSeries_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
-      unq_labels <- PlotSeries_reactive$res %>% 
-        distinct(label) %>% 
-        unlist()
-      v <- list()
-      print(sensor_list_dt)
-      for(i in 1:length(unq_labels)) {
-        print(paste0('label: ',i))
-        sldt <- sensor_list_dt[[i]]
-        
-        print(sldt)
-        sldt_cut <- paste0(sldt %>% str_sub(end = 20), '...', str_sub(sldt, start = -10))
-        plot_data <- PlotSeries_reactive$res %>% filter(label == unq_labels[[i]])
-        plot_data <- plot_data %>% mutate(label = paste0(label, '_', sldt_cut)) 
-        v[[i]] <- new_plotting(plot_data) 
-        
-      }
-      # output$Plots_power <- renderUI ({
-      #   v
-      # })
-      showModal(modalDialog(v))
-    } 
- 
+                                              6,
+                                              0, 
+                                              source = "obs_120",
+                                              start = Sys.Date() - 360,
+                                              end = Sys.Date(),
+                                              toclean = 'raw',
+                                              minutes=0:59)
+          print(input$AllSeriesDateRange[[1]])
+  #        print(is.empty(PlotSeries_reactive$res))
+          if(!is.null(PlotSeries_reactive$res)){
+            PlotSeries_reactive$res <- PlotSeries_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
+            unq_labels <- PlotSeries_reactive$res %>% 
+              distinct(label) %>% 
+              unlist()
+            v <- list()
+#            print(sensor_list_dt)
+            print(length(unq_labels))
+            for(i in 1:length(unq_labels)) {
+#              print(paste0('label: ',i))
+              sldt <- sensor_list_dt[[i]]
+#              print(sldt)
+              sldt_cut <- paste0(sldt %>% str_sub(end = 20), '...', str_sub(sldt, start = -10))
+              plot_data <- PlotSeries_reactive$res %>% filter(label == unq_labels[[i]])
+              plot_data <- plot_data %>% mutate(label = paste0(label, '_', sldt_cut)) 
+              v[[i]] <- new_plotting(plot_data) 
+              
+            }
+#            print("Plot_series")
+#            print(PlotSeries_reactive$res)
+            showModal(modalDialog(v,
+                                  downloadButton("downloadData", "Download")))
+            output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv')  },
+                                                   content = function(file) {
+                                                     write_csv(PlotSeries_reactive$res %>% 
+                                                                 rename("timestamp" = time) %>%
+                                                                 arrange(label, timestamp) %>% 
+                                                               separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
+                                                               file)
+                                                   })
+          } 
         }      
       })
-    
   }
 })
 
