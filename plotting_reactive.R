@@ -1,5 +1,11 @@
 get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "observations", start = "2013-01-01", end = Sys.Date(), toclean = 'raw') {
+  if(is.null(variable_id)) {
+    print(all_variables)
+    variable_id <- all_variables %>% filter(as.numeric(variable_id)<103) %>%
+      select(variable_id) %>% unlist()
+  }
   if(is.null(checkbox) | is.null(variable_id)) return(NULL)
+  print(paste0("variable: ",variable_id))
   locs <- checkbox %>%
     map_dbl(function(x){
       string_vec <- unlist(strsplit(x,'_'))
