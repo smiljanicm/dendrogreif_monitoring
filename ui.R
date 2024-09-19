@@ -14,29 +14,34 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                             '.modal-dialog { width: fit-content !important; }'
                           ),
                           sidebarLayout(
-                            sidebarPanel(
-                              actionLink("selectall_sites","Select All"),
-                              checkboxGroupInput("selectedSites", 
-                                                 "Choose sites:",
-                                                 choices = sites_df$name,
-                                                 inline=F),
-                              actionButton("Plot_series", label = "Plot [p]")
-                            ),
-                            mainPanel = mainPanel(
-                              leafletOutput("sitemap", height = '400'),
-                              tabsetPanel(id='seriestabs',
-                                tabPanel("Power",
-                                         DT::DTOutput("power_status"),
-                                         uiOutput("Plots_power")
+                                div(class = "col-lg-4",
+                                    actionLink("selectall_sites","Select All"),
+                                    checkboxGroupInput("selectedSites", 
+                                                       "Choose sites:",
+                                                       choices = sites_df$name,
+                                                       inline=F)#,
+                                    #actionButton("Plot_series", label = "Plot [p]")
                                 ),
-                                tabPanel("Site Info",
-                                         DT::DTOutput("site_status")
-                                ),
-                                tabPanel("Raw",
-                                         DT::DTOutput("location_status")
+                                div(class = "col-lg-8",
+                                    leafletOutput("sitemap", height = '400'),
+                                    tabsetPanel(id='seriestabs',
+                                                tabPanel("Power",
+                                                         DT::DTOutput("power_status"),
+                                                         uiOutput("Plots_power")
+                                                ),
+                                                tabPanel("Site Info",
+                                                         DT::DTOutput("site_status")
+                                                ),
+                                                tabPanel("Raw",
+                                                         DT::DTOutput("location_status")
+                                                )
+                                    ),       
+                                    fixedPanel(
+                                      actionButton("Plot_series", label = "Plot [p]"),
+                                      right = 10,
+                                      bottom = 10
+                                    )
                                 )
-                              )
-                            )
                           )
                           
                  ),
@@ -68,12 +73,19 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset",
                                              choices = map(1:nrow(all_variables), 
                                                            function(x) { 
                                                              all_variables$variable_id[[x]]
-                                                             }) 
+                                                           }) 
                                              %>% set_names(all_variables$description), multiple = T),
                               
                               actionButton("AllSeriesAction", "Plot [p]")
                             ),
-                            mainPanel(DT::DTOutput("seriesDT")#,
+                            mainPanel(DT::DTOutput("seriesDT"),
+                                      fixedPanel(
+                                        actionButton("test", label = "test [p]"),
+                                        #  left = 0,
+                                        #  width= '100%',
+                                        right = 10,
+                                        bottom = 0
+                                      )#,
                                       #uiOutput("Plots")
                             )
                           )
