@@ -18,6 +18,6 @@ observeEvent(input$sitemap_marker_click, {
   } else {
     selected = c(input$selectedSites, click$id)
   }
-  updateSelectInput(session, "selectedSites", 
+  updateSelectizeInput(session, "selectedSites", 
                     selected = selected)
 })

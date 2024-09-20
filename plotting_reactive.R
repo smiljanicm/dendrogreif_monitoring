@@ -197,7 +197,7 @@ PlotSeries_trigger <- reactive({
   list(input$Plot_series, input$tabset, input$seriestabs)
 })
 observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
-  if(input$tabset == 'Map') {
+  if(input$tabset == 'Diagnostics') {
     if(input$seriestabs == 'Power')
       withProgress(message = 'Getting data...', value=0.5, {
         s <- input$power_status_rows_selected

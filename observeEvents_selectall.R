@@ -2,9 +2,11 @@ observeEvent(input$selectall_sites, {
   if(input$selectall_sites == 0) {
     return(NULL)
   } else if (input$selectall_sites%%2 == 0) {
-    updateCheckboxGroupInput(session,"selectedSites",choices=sites_df$name)
+#    updateCheckboxGroupInput(session,"selectedSites",choices=sites_df$name)
+    updateSelectizeInput(session,"selectedSites",choices=sites_df$name)
   } else {
-    updateCheckboxGroupInput(session,"selectedSites",choices=sites_df$name,selected=sites_df$name)
+#    updateCheckboxGroupInput(session,"selectedSites",choices=sites_df$name,selected=sites_df$name)
+    updateSelectizeInput(session,"selectedSites",choices=sites_df$name, selected=sites_df$name)
   }
 })
 
