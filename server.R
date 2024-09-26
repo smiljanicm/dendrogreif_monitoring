@@ -23,7 +23,7 @@ server <- function(input, output, session) {
     		filter = list(position = 'top', clear = FALSE),
     		extensions = c('Responsive'),
     		options = list(pageLength = 50, responsive = TRUE)) %>% 
-      formatStyle('most_recent_value', backgroundColor = styleInterval(c(12.01, 12.2), c('red', 'yellow', 'green'))) %>% 
+      formatStyle('most_recent_value', backgroundColor = styleInterval(c(11.95, 12.2), c('red', 'yellow', 'green'))) %>% 
       formatStyle('days_from_now', backgroundColor = styleInterval(c(1, 5), c('green', 'yellow', 'red'))) %>%
       formatStyle('should_be_visited', backgroundColor = styleEqual(c(F, T), c('green', 'red')))
   })

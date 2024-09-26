@@ -54,8 +54,9 @@ batt_buff <- all_buff %>%
   separate(description, c('loc_desc', 'online', 'Battery'),  '; ') %>%
   mutate(days_from_now = difftime(Sys.time(), last_timestamp, units = "days")) %>%
   mutate(days_from_now = as.numeric(days_from_now)) %>%
-  mutate(should_be_visited = case_when(online == 'Online' ~ ((most_recent_value < 12.2) | (days_from_now > 5)),
-                                        TRUE ~ days_from_now > 35)) %>%
+  mutate(should_be_visited = case_when(grepl('solar', Battery) ~ days_from_now > 5,
+                                        online == 'Online' ~ ((most_recent_value < 12.2) | (days_from_now > 5)),
+                                        TRUE ~ days_from_now > 45)) %>%
   relocate(location_id, .after=last_col())
 batt_buff_showed <- batt_buff %>% arrange(desc(online), desc(should_be_visited))
 
