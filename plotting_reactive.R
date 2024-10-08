@@ -260,3 +260,72 @@ observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
   }
 })
 
+
+PlotDendrometers_reactive <- reactiveValues(res = NULL)
+PlotDendrometers_trigger <- reactive({
+  list(input$Plot_series, input$tabset, input$seriestabs)
+})
+observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
+  if(input$tabset == 'Diagnostics') {
+    if(input$seriestabs == 'Dendrometers')
+      withProgress(message = 'Getting data...', value=0.5, {
+        s <- input$dendrometer_status_rows_selected
+        print('These rows were selected:\n\n')
+        print(s, sep = ', ')
+        if (length(s)) {
+          print(names(input))
+          print(input$dendrometer_status_rows_all)
+          #         var_buff <- batt_buff %>% filter(site %in% input$selectedSites)
+          var_buff <- dendrometer_status[s,]
+          
+          sensor_list_dt <- var_buff %>%
+            unite('cons', everything()) %>%
+            unlist()
+          names(sensor_list_dt) <- NULL
+          print(sensor_list_dt)
+          PlotDendrometers_reactive$res <- get_data(sensor_list_dt, 
+                                              1,
+                                              0, 
+                                              source = "obs_120",
+                                              start = Sys.Date() - 90,
+                                              end = Sys.Date(),
+                                              toclean = 'raw',
+                                              minutes=0:59)
+          print(nrow(PlotDendrometers_reactive$res))
+          if(nrow(PlotDendrometers_reactive$res)>0){
+            PlotDendrometers_reactive$res <- PlotDendrometers_reactive$res %>% separate(label, c('label', 'cleaning'), sep='/')
+            unq_labels <- PlotDendrometers_reactive$res %>% 
+              distinct(label) %>% 
+              unlist()
+            v <- list()
+            #            print(sensor_list_dt)
+            print(length(unq_labels))
+            for(i in 1:length(unq_labels)) {
+              #              print(paste0('label: ',i))
+              sldt <- sensor_list_dt[[i]]
+              #              print(sldt)
+              sldt_cut <- paste0(sldt %>% str_sub(end = 20), '...', str_sub(sldt, start = -10))
+              plot_data <- PlotDendrometers_reactive$res %>% filter(label == unq_labels[[i]])
+              plot_data <- plot_data %>% mutate(label = paste0(label, '_', sldt_cut)) 
+              v[[i]] <- new_plotting(plot_data) 
+              
+            }
+            #            print("Plot_series")
+            #            print(PlotSeries_reactive$res)
+            showModal(modalDialog(v,
+                                  downloadButton("downloadData", "Download"),
+                                  easyClose = TRUE))
+            output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv')  },
+                                                   content = function(file) {
+                                                     write_csv(PlotDendrometers_reactive$res %>% 
+                                                                 rename("timestamp" = time) %>%
+                                                                 arrange(label, timestamp) %>% 
+                                                                 separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
+                                                               file)
+                                                   })
+          } 
+        }      
+      })
+  }
+})
+

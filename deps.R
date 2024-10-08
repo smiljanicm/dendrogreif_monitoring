@@ -31,6 +31,10 @@ sites_df <- sites_df %>% mutate(lat_long_nest = strsplit(gsub('^\\(|\\)', '', gp
   mutate(Lat = as.numeric(Lat)) %>%
   mutate(Long = as.numeric(Long))
 
+all_variables <- tbl(con, "variables") %>% 
+  select(description, variable_id) %>%
+  collect()
+
 loc_buff <-  tbl(con, "location_overview") %>% 
   collect() %>% 
   relocate(location_id, .after=last_col()) %>%
@@ -45,6 +49,33 @@ all_buff <- tbl(con, "site_locs_overview") %>%
   arrange(site, species, label, height)
 print(all_buff %>% head())
 print(loc_buff %>% head())
+
+diagnostics <- tbl(con, "diagnostics") %>% 
+  collect()
+  
+dendrometer_status <- all_buff %>%
+  left_join(loc_buff, 
+            by=join_by(description==loc_description, site,location_id)) %>%
+  left_join(all_variables, by=join_by(variable == description)) %>%
+  left_join(diagnostics, by=join_by(location_id, variable_id)) %>%
+  filter(variable == 'Dendrometer') %>%
+  mutate(days_from_now = difftime(Sys.time(), last_timestamp, units = "days")) %>%
+  mutate(days_from_now = as.numeric(days_from_now)) %>%
+  relocate(location_id, .after=last_col()) %>%
+  mutate(condition = case_when(# manual ok, - light green
+                               # manual broken, - pink
+                               # manual suspect - brown
+                            most_recent_value < 500 ~ 'broken',
+                            most_recent_value > 7000 ~ 'needs_reset',
+                            resid_mwa > 100 ~ 'suspect',
+                            sd_value > 200 ~ 'high_sd (growing?)',
+                            is.na(resid_mwa) ~ 'no_recent_values',
+                            TRUE ~ 'ok')) %>%
+  select(site, label, species, height, condition, last_timestamp, days_from_now, 
+         most_recent_value, max_value, min_value, avg_value, sd_value,
+         resid_mwa, avg_mwa, max_resid, min_resid, location_id) %>%
+  relocate(location_id, .after=last_col())
+
 
 batt_buff <- all_buff %>% 
   left_join(loc_buff, 
@@ -62,9 +93,6 @@ batt_buff_showed <- batt_buff %>% arrange(desc(online), desc(should_be_visited))
 
 
 print(batt_buff)
-all_variables <- tbl(con, "variables") %>% 
-  select(description, variable_id) %>%
-  collect()
 
 clean_sensor <- function(data, clean_df = cdff, locID = 2, varID = 1, clsetID = 1) {
   #cleaning_set_id;location_id;variable_id;c

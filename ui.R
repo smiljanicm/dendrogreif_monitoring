@@ -28,11 +28,11 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset", collapsible = TRUE,
                                                          DT::DTOutput("power_status"),
                                                          uiOutput("Plots_power")
                                                 ),
+                                                tabPanel("Dendrometers",
+                                                         DT::DTOutput("dendrometer_status")
+                                                ),
                                                 tabPanel("Site Info",
                                                          DT::DTOutput("site_status")
-                                                ),
-                                                tabPanel("Raw",
-                                                         DT::DTOutput("location_status")
                                                 ),
  #                                   ),       
                                     fixedPanel(
