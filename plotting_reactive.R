@@ -87,7 +87,7 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
              yday = lubridate::yday(time),
              dec_date = lubridate::decimal_date(time),
              time = dec_date - Years,
-             label = paste0(location_id, '_', Years))
+             label = paste0(location_id, '/', Years))
   } else {
     res <- res %>%
       rename(label = location_id,
@@ -306,6 +306,7 @@ observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
               #              print(sldt)
               sldt_cut <- paste0(sldt %>% str_sub(end = 20), '...', str_sub(sldt, start = -10))
               plot_data <- PlotDendrometers_reactive$res %>% filter(label == unq_labels[[i]])
+              
               plot_data <- plot_data %>% mutate(label = paste0(label, '_', sldt_cut)) 
               v[[i]] <- new_plotting(plot_data) 
               
