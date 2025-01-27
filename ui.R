@@ -63,6 +63,8 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset", collapsible = TRUE,
                                 #actionButton("Plot_series", label = "Plot [p]")
                                 checkboxInput("compareYearsAllSeries", 
                                               "Compare years"),
+                                checkboxInput("compareSeries",
+                                              "Compare Series"),
                                 radioButtons("AllSeriesSource", 
                                              "Choose data resolution:",
                                              choiceNames = c("RAW", "05 minutes", "15 minutes", "30 minutes", "60 minutes", "120 minutes"),
@@ -97,5 +99,30 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset", collapsible = TRUE,
                                 #uiOutput("Plots")
                             )
                           )
-                 )
+                 ),
+tabPanel("SiteReports",
+         tabsetPanel(id='reporttabs',
+                     tabPanel("Eldena Unmanaged",
+                              htmlOutput('Eldena_Unmanaged')
+                     ),
+                     tabPanel("Spandowerhagen Red Oak",
+                              htmlOutput('Spandowerhagen_Red_Oak')
+                     )#,
+                     
+                     #                     tabPanel("Dendrometers",
+                     #                              DT::DTOutput("dendrometer_status")
+                     #                     ),
+                     #                     tabPanel("Site Info",
+                     #                              DT::DTOutput("site_status")
+                     #                     )
+                     
+         )
+         
+),
+tabPanel("DynamicReports",
+         selectizeInput("selectReport", 
+                        "Choose site:",
+                        choices = sites_df$name,
+                        multiple = F),
+         uiOutput("dynamic_reports"))
 )

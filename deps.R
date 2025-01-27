@@ -22,7 +22,7 @@ con <- DBI::dbConnect(RPostgres::Postgres(),
 
 sites <- tbl(con, "sites")
 
-sites_df <- sites %>% collect()
+sites_df <- sites %>% arrange(name) %>% collect()
 
 sites_df <- sites_df %>% mutate(lat_long_nest = strsplit(gsub('^\\(|\\)', '', gps), ',')) %>%
   unnest(lat_long_nest) %>% 

@@ -43,4 +43,37 @@ server <- function(input, output, session) {
       formatStyle('days_from_now', backgroundColor = styleInterval(c(1, 5), c('green', 'yellow', 'red'))) %>%
       formatStyle('should_be_visited', backgroundColor = styleEqual(c(F, T), c('green', 'red')))
   })
+  
+  addResourcePath("html", "./dmhtml")
+  output$Eldena_Unmanaged <- renderUI({
+    tags$iframe(src="html/Eldena_unmanaged_static.html",
+                style='width:98vw;height:80vh;')
+  })
+  output$Spandowerhagen_Red_Oak <- renderUI({
+    tags$iframe(src="html/Spandowerhagen_Red_Oak_static.html",
+                style='width:98vw;height:80vh;')
+  })
+
+  output$dynamic_reports <- renderUI({
+#    sites_df <- sites %>% arrange(name) %>% collect()
+    
+#    sites_df %>% distinct(site_id, name)
+    
+    dynTabs <- 
+      lapply(1:nrow(sites_df), # 1:5 should be the distinct site names 
+             function(x){
+               site <- sites_df[x,]
+               site_name <- site$name
+               site_id <- site$site_id
+               tabPanelBody(paste(site_name),#, site_id, sep=':'), 
+                        tags$iframe(src=paste0("html/",site_name,".html"), # html path should be defined in SiteReports repo and using the same code here (sub-package???)
+                                    style='width:98vw;height:80vh;')
+               )})
+    do.call(tabsetPanel, c(dynTabs,id='hidden_tabs', type='hidden'))
+  })
+  
+  observeEvent(input$selectReport, {
+    print(input$selectReport)
+    updateTabsetPanel(session, "hidden_tabs", selected = paste0(input$selectReport))
+  })
 }
