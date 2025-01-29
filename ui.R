@@ -95,7 +95,10 @@ ui <- navbarPage("DendroGreifMonitoring", id="tabset", collapsible = TRUE,
                                   #  width= '100%',
                                   right = 10,
                                   bottom = 0
-                                )#,
+                                ),
+                                checkboxInput("dt_sel", "Select/Deselect all"),
+                                h4("selected_rows:"),
+                                verbatimTextOutput("selected_rows", TRUE)
                                 #uiOutput("Plots")
                             )
                           )

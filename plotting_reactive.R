@@ -125,6 +125,18 @@ new_plotting <- function(res, ...) {
   return(p)
 }
 
+static_plotting <- function(res, ...) {
+  if(is.null(res)) return(NULL)
+  print("start")
+  res <- res %>% select(time, value, label)
+  res_dp_orig <- nrow(res)
+  lbs <- res %>% distinct(label)
+  print(res %>% head())
+  p <- data.frame[time = 1:10, y=41:50, label='test'] %>%
+    ggplot(aes(x= time, y=value, colour= label, group = label)) + geom_line()
+  return(p)
+}
+
 AllSeries_reactive <- reactiveValues(res = NULL)
 AllSeries_trigger <- reactive({
   list(input$AllSeriesAction, input$tabset)

@@ -76,4 +76,17 @@ server <- function(input, output, session) {
     print(input$selectReport)
     updateTabsetPanel(session, "hidden_tabs", selected = paste0(input$selectReport))
   })
+  
+  dt_proxy <- DT::dataTableProxy("seriesDT")
+  
+  observeEvent(input$dt_sel, {
+    print(names(input))
+    if (isTRUE(input$dt_sel)) {
+      DT::selectRows(dt_proxy, input$seriesDT_rows_current)
+    } else {
+      DT::selectRows(dt_proxy, NULL)
+    }
+  })
+  output$selected_rows <- renderPrint(print(input$seriesDT_rows_selected))
+  
 }
