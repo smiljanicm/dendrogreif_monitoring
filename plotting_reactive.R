@@ -13,10 +13,10 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
   print("locations:")
   print(locs)
   locs <- na.omit(locs)
-  vars <- variable_id %>% map_dbl(function(x) { as.numeric(x) })
+#  vars <- variable_id %>% map_dbl(function(x) { as.numeric(x) })
   
-  print(vars)
-  print(class(vars))
+#  print(vars)
+#  print(class(vars))
   if(length(locs)==0) { return() }
   sql_query <- paste0("SELECT o.timestamp as timestamp, o.value, p.label, l.description, v.variable_id,
                        l.height_above_ground as height, v.description as variable, l.location_id
@@ -30,9 +30,12 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
                            AND o.timestamp BETWEEN '", start, "'::timestamp AND '", end, "'::timestamp
                          ORDER BY o.timestamp")
   res <- DBI::dbGetQuery(con, sql_query)
+  vars <- res %>% distinct(variable_id) %>% unlist()
+  print("vars:")
+  print(vars)
   res <- res %>% mutate(location_id = case_when(is.null(label) ~ paste0(variable_id, '_', description, '_', variable, '_', height, '_', location_id),
-                                                TRUE ~ paste0(variable_id, '_', label, '_', variable, '_', height, '_', location_id))) %>% select(timestamp, value, location_id)
-  
+                                                TRUE ~ paste0(variable_id, '_', label, '_', variable, '_', height, '_', location_id))) %>% 
+    select(timestamp, value, location_id)
   if(toclean != 'raw') {
     print(toclean)
     print(res %>% head())
@@ -62,7 +65,7 @@ get_data <- function(checkbox, variable_id, cybox, minutes = 0:59, source = "obs
           #          filter(grepl(paste0('_',x), location_id)) %>%
           mutate(locs = location_id) %>%  
           separate(locs, c("variable_id", "label", "variable", "height", "loc_id"), sep="_") 
-        print(t)
+        print(t %>% head())
         t <- t %>% 
           filter(loc_id == x) %>%
           filter(variable_id == v) %>%
@@ -134,7 +137,12 @@ observeEvent(input$AllSeriesDateRangePlus, {
 observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
   if(input$tabset == 'Plot/Download') {
     withProgress(message = 'Getting data...', value=0.5, {
-      s <- input$seriesDT_rows_selected
+      # if(isTRUE(input$dt_sel)) {
+      #   s <- input$seriesDT_rows_current
+      # } else {
+        s <- input$seriesDT_rows_selected
+      # }
+
       print('These rows were selected:\n\n')
       print(s, sep = ', ')
       if (length(s)) {
@@ -161,30 +169,69 @@ observeEvent(ignoreInit=TRUE, AllSeries_trigger(), {
         unq_labels <- AllSeries_reactive$res %>% 
           distinct(label) %>% 
           unlist()
-        v <- list()
-        for(i in 1:length(unq_labels)) {
-          print(paste0('label: ',i))
-          
-          plot_data <- AllSeries_reactive$res %>% filter(label == unq_labels[[i]])
-          plot_data <- plot_data %>% mutate(label = paste0(label, '_', cleaning)) 
-          v[[i]] <- new_plotting(plot_data) 
-          
-          
-          # output$Plots <- renderUI ({
-          #   v
-          # })
+        if(!input$compareSeries) {
+          v <- list()
+          for(i in 1:length(unq_labels)) {
+            print(paste0('label: ',i))
+            
+            plot_data <- AllSeries_reactive$res %>% filter(label == unq_labels[[i]])
+            plot_data <- plot_data %>% mutate(label = paste0(label, '_', cleaning)) 
+            v[[i]] <- new_plotting(plot_data) 
+
+            print("done")
+          }
           showModal(modalDialog(v,
                                 downloadButton("downloadData", "Download"),
                                 easyClose = TRUE))
-          output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv') },
-                                                 content = function(file) {
-                                                   write_csv(AllSeries_reactive$res %>% 
-                                                               rename("timestamp" = time) %>%
-                                                               arrange(label, timestamp) %>%
-                                                               separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
-                                                             file)
-                                                 })
+          
         }
+        else {
+          sample_df <- data.frame(
+            group = factor(rep(letters[1:3], each = 10)),
+            value = rnorm(30)
+          )
+          group_means_df <- setNames(
+            aggregate(value ~ group, sample_df, mean),
+            c("group", "group_mean")
+          )
+          print("res head:")
+          AllSeries_reactive$res %>% head() %>% print()
+          print("unq_labels:")
+          AllSeries_reactive$res %>% distinct(label) %>% print()
+          print("label separated:")
+          plot_dat <- 
+            AllSeries_reactive$res %>%
+            mutate(lab = label) %>%
+            separate(lab, 
+                     into = c('var_id', 'label', 'variable', 'height', 'loc_id'), 
+                     sep='_')
+          print(plot_dat %>% head())
+          num_vars <- plot_dat %>% distinct(variable) %>% nrow()
+          print(num_vars)
+          print(paste0(num_vars*300, 'px'))
+          output$static_plots <- renderPlot({
+            plot_dat %>%
+              ggplot(mapping = aes(x = time, y = value, color = label, group = paste0(loc_id, cleaning))) +
+              facet_wrap(~variable, scales='free_y', ncol = 1) +
+              geom_line() +
+              theme_bw() +
+              theme(legend.position = "bottom")
+            },
+            res = 72*1.25)
+          showModal(modalDialog(plotOutput("static_plots", width='1000px', height=paste0(num_vars*300, 'px')),
+                                downloadButton("downloadData", "Download"),
+                                easyClose = TRUE))
+          
+        }
+        output$downloadData <- downloadHandler(filename = function() { paste0('DendroGreifData_', format(Sys.time(), "%Y_%M_%d_%H_%m_%S"), '.csv') },
+                                               content = function(file) {
+                                                 write_csv(AllSeries_reactive$res %>% 
+                                                             rename("timestamp" = time) %>%
+                                                             arrange(label, timestamp) %>%
+                                                             separate(label, into = c('variable_id', 'label','variable','height_above_ground', 'location_id'), sep='_'),
+                                                           file)
+                                               })
+        
       }
       else {showModal(modalDialog("NoData",
                                   easyClose = TRUE))}
@@ -309,7 +356,7 @@ observeEvent(ignoreInit=TRUE, PlotSeries_trigger(), {
               
               plot_data <- plot_data %>% mutate(label = paste0(label, '_', sldt_cut)) 
               v[[i]] <- new_plotting(plot_data) 
-              
+
             }
             #            print("Plot_series")
             #            print(PlotSeries_reactive$res)
